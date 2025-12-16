@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contact Us{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <h1>Contact Us</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'palace:home' %}">Home</a></li>
+                <li class="breadcrumb-item active">Contact</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <!-- Contact Form -->
+            <div class="col-lg-8 mb-4" data-aos="fade-up">
+                <div class="card shadow">
+                    <div class="card-body p-4">
+                        <h4 class="card-title mb-4"><i class="bi bi-envelope me-2 text-primary"></i> Send Us a Message</h4>
+                        
+                        {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                        
+                        <form method="post" action="{% url 'community:contact' %}" class="needs-validation" novalidate>
+                            {% csrf_token %}
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="name" class="form-label">Full Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="name" name="name" required>
+                                    <div class="invalid-feedback">Please enter your name.</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
+                                    <input type="email" class="form-control" id="email" name="email" required>
+                                    <div class="invalid-feedback">Please enter a valid email.</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="phone" class="form-label">Phone Number</label>
+                                    <input type="tel" class="form-control" id="phone" name="phone">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="message_type" class="form-label">Message Type <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="message_type" name="message_type" required>
+                                        <option value="">Select type...</option>
+                                        <option value="inquiry">General Inquiry</option>
+                                        <option value="visit">Palace Visit Request</option>
+                                        <option value="audience">Request Audience with Ejeh</option>
+                                        <option value="media">Media Inquiry</option>
+                                        <option value="complaint">Complaint</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                    <div class="invalid-feedback">Please select a message type.</div>
+                                </div>
+                                <div class="col-12">
+                                    <label for="subject" class="form-label">Subject <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="subject" name="subject" required>
+                                    <div class="invalid-feedback">Please enter a subject.</div>
+                                </div>
+                                <div class="col-12">
+                                    <label for="message" class="form-label">Message <span class="text-danger">*</span></label>
+                                    <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+                                    <div class="invalid-feedback">Please enter your message.</div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="privacy" required>
+                                        <label class="form-check-label" for="privacy">
+                                            I agree to the processing of my personal data
+                                        </label>
+                                        <div class="invalid-feedback">You must agree before submitting.</div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        <i class="bi bi-send me-2"></i> Send Message
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Contact Information -->
+            <div class="col-lg-4">
+                <div class="card shadow mb-4" data-aos="fade-left">
+                    <div class="card-body p-4">
+                        <h5 class="card-title mb-4"><i class="bi bi-info-circle me-2 text-primary"></i> Contact Information</h5>
+                        
+                        <div class="mb-4">
+                            <h6 class="text-muted mb-2"><i class="bi bi-geo-alt me-2"></i> Address</h6>
+                            <p class="mb-0">
+                                {% if palace_info.address %}
+                                {{ palace_info.address }}
+                                {% else %}
+                                Ejeh's Palace<br>
+                                Ankpa, Kogi State<br>
+                                Nigeria
+                                {% endif %}
+                            </p>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h6 class="text-muted mb-2"><i class="bi bi-telephone me-2"></i> Phone</h6>
+                            <p class="mb-0">
+                                {% if palace_info.phone %}
+                                {{ palace_info.phone }}
+                                {% else %}
+                                Contact phone number
+                                {% endif %}
+                            </p>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h6 class="text-muted mb-2"><i class="bi bi-envelope me-2"></i> Email</h6>
+                            <p class="mb-0">
+                                {% if palace_info.email %}
+                                <a href="mailto:{{ palace_info.email }}">{{ palace_info.email }}</a>
+                                {% else %}
+                                info@ejehpalace.com
+                                {% endif %}
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <h6 class="text-muted mb-2"><i class="bi bi-clock me-2"></i> Office Hours</h6>
+                            <p class="mb-0">
+                                Monday - Friday: 9:00 AM - 5:00 PM<br>
+                                Saturday: 10:00 AM - 2:00 PM<br>
+                                Sunday: Closed
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Social Media -->
+                <div class="card shadow" data-aos="fade-left" data-aos-delay="100">
+                    <div class="card-body p-4">
+                        <h5 class="card-title mb-4"><i class="bi bi-share me-2 text-primary"></i> Follow Us</h5>
+                        <div class="d-flex gap-2">
+                            {% if palace_info.facebook_url %}
+                            <a href="{{ palace_info.facebook_url }}" class="btn btn-outline-primary" target="_blank">
+                                <i class="bi bi-facebook"></i>
+                            </a>
+                            {% endif %}
+                            {% if palace_info.twitter_url %}
+                            <a href="{{ palace_info.twitter_url }}" class="btn btn-outline-dark" target="_blank">
+                                <i class="bi bi-twitter-x"></i>
+                            </a>
+                            {% endif %}
+                            {% if palace_info.instagram_url %}
+                            <a href="{{ palace_info.instagram_url }}" class="btn btn-outline-danger" target="_blank">
+                                <i class="bi bi-instagram"></i>
+                            </a>
+                            {% endif %}
+                            {% if palace_info.youtube_url %}
+                            <a href="{{ palace_info.youtube_url }}" class="btn btn-outline-danger" target="_blank">
+                                <i class="bi bi-youtube"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Map Section -->
+        {% if palace_info.map_embed_url %}
+        <div class="mt-5" data-aos="fade-up">
+            <h4 class="mb-4"><i class="bi bi-map me-2 text-primary"></i> Find Us</h4>
+            <div class="ratio ratio-21x9">
+                <iframe src="{{ palace_info.map_embed_url }}" allowfullscreen="" loading="lazy" 
+                        referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

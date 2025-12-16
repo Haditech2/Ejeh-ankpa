@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% if form.instance.pk %}Edit{% else %}Add{% endif %} Ejeh Profile{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <h1>{% if form.instance.pk %}Edit{% else %}Add{% endif %} Ejeh Profile</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'palace:home' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'accounts:admin_dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item active">{% if form.instance.pk %}Edit{% else %}New{% endif %} Ejeh</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <i class="bi bi-person-badge me-2"></i>
+                        {% if form.instance.pk %}Edit Ejeh Profile{% else %}Add New Ejeh Profile{% endif %}
+                    </div>
+                    <div class="card-body p-4">
+                        <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                            {% csrf_token %}
+                            
+                            <!-- Basic Information -->
+                            <h5 class="border-bottom pb-2 mb-4">Basic Information</h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="full_name" class="form-label">Full Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control {% if form.full_name.errors %}is-invalid{% endif %}" 
+                                           id="full_name" name="full_name" value="{{ form.full_name.value|default:'' }}" required>
+                                    {% if form.full_name.errors %}
+                                    <div class="invalid-feedback">{{ form.full_name.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="royal_name" class="form-label">Royal Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control {% if form.royal_name.errors %}is-invalid{% endif %}" 
+                                           id="royal_name" name="royal_name" value="{{ form.royal_name.value|default:'' }}" 
+                                           placeholder="e.g., Ejeh Ankpa I" required>
+                                    {% if form.royal_name.errors %}
+                                    <div class="invalid-feedback">{{ form.royal_name.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="reign_status" class="form-label">Reign Status <span class="text-danger">*</span></label>
+                                    <select class="form-select {% if form.reign_status.errors %}is-invalid{% endif %}" 
+                                            id="reign_status" name="reign_status" required>
+                                        {% for value, label in form.fields.reign_status.choices %}
+                                        <option value="{{ value }}" {% if form.reign_status.value == value %}selected{% endif %}>
+                                            {{ label }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                    {% if form.reign_status.errors %}
+                                    <div class="invalid-feedback">{{ form.reign_status.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="reign_start" class="form-label">Reign Start <span class="text-danger">*</span></label>
+                                    <input type="date" class="form-control {% if form.reign_start.errors %}is-invalid{% endif %}" 
+                                           id="reign_start" name="reign_start" value="{{ form.reign_start.value|date:'Y-m-d' }}" required>
+                                    {% if form.reign_start.errors %}
+                                    <div class="invalid-feedback">{{ form.reign_start.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="reign_end" class="form-label">Reign End</label>
+                                    <input type="date" class="form-control" id="reign_end" name="reign_end" 
+                                           value="{{ form.reign_end.value|date:'Y-m-d' }}">
+                                    <div class="form-text">Leave empty for current Ejeh</div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="date_of_birth" class="form-label">Date of Birth</label>
+                                    <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" 
+                                           value="{{ form.date_of_birth.value|date:'Y-m-d' }}">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="place_of_birth" class="form-label">Place of Birth</label>
+                                    <input type="text" class="form-control" id="place_of_birth" name="place_of_birth" 
+                                           value="{{ form.place_of_birth.value|default:'' }}">
+                                </div>
+                            </div>
+                            
+                            <!-- Images -->
+                            <h5 class="border-bottom pb-2 mb-4 mt-4">Images</h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="portrait" class="form-label">Portrait Image <span class="text-danger">*</span></label>
+                                    <input type="file" class="form-control" id="portrait" name="portrait" accept="image/*">
+                                    {% if form.instance.portrait %}
+                                    <small class="text-muted">Current: {{ form.instance.portrait.name }}</small>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="coronation_image" class="form-label">Coronation Image</label>
+                                    <input type="file" class="form-control" id="coronation_image" 
+                                           name="coronation_image" accept="image/*">
+                                    {% if form.instance.coronation_image %}
+                                    <small class="text-muted">Current: {{ form.instance.coronation_image.name }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Biography -->
+                            <h5 class="border-bottom pb-2 mb-4 mt-4">Biography</h5>
+                            
+                            <div class="mb-3">
+                                <label for="biography" class="form-label">Full Biography <span class="text-danger">*</span></label>
+                                <textarea class="form-control {% if form.biography.errors %}is-invalid{% endif %}" 
+                                          id="biography" name="biography" rows="8" required>{{ form.biography.value|default:'' }}</textarea>
+                                {% if form.biography.errors %}
+                                <div class="invalid-feedback">{{ form.biography.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="achievements" class="form-label">Major Achievements</label>
+                                <textarea class="form-control" id="achievements" name="achievements" rows="5"
+                                          placeholder="List major achievements during reign">{{ form.achievements.value|default:'' }}</textarea>
+                            </div>
+                            
+                            <!-- Additional Information -->
+                            <h5 class="border-bottom pb-2 mb-4 mt-4">Additional Information</h5>
+                            
+                            <div class="mb-3">
+                                <label for="motto" class="form-label">Royal Motto</label>
+                                <input type="text" class="form-control" id="motto" name="motto" 
+                                       value="{{ form.motto.value|default:'' }}" placeholder="Personal or reign motto">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="education" class="form-label">Education</label>
+                                <textarea class="form-control" id="education" name="education" rows="3">{{ form.education.value|default:'' }}</textarea>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="family_info" class="form-label">Family Information</label>
+                                <textarea class="form-control" id="family_info" name="family_info" rows="3"
+                                          placeholder="Information about royal family">{{ form.family_info.value|default:'' }}</textarea>
+                            </div>
+                            
+                            <div class="d-flex gap-3">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-lg me-2"></i> 
+                                    {% if form.instance.pk %}Update{% else %}Create{% endif %} Profile
+                                </button>
+                                <a href="{% url 'accounts:admin_dashboard' %}" class="btn btn-outline-secondary">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

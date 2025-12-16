@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Council of Chiefs{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <h1>Council of Chiefs</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'palace:home' %}">Home</a></li>
+                <li class="breadcrumb-item active">Council of Chiefs</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <p class="lead text-muted">
+                The Council of Chiefs serves as the advisory body to the Ejeh of Ankpa, 
+                preserving traditions and guiding the community.
+            </p>
+        </div>
+        
+        {% if chiefs %}
+        <div class="row">
+            {% for chief in chiefs %}
+            <div class="col-md-6 col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0 }}00">
+                <div class="card h-100 shadow-sm text-center">
+                    <div class="card-body p-4">
+                        {% if chief.user.profile_image %}
+                        <img src="{{ chief.user.profile_image.url }}" class="rounded-circle mb-3" 
+                             style="width: 120px; height: 120px; object-fit: cover;" alt="{{ chief.user.get_full_name }}">
+                        {% else %}
+                        <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center mx-auto mb-3" 
+                             style="width: 120px; height: 120px;">
+                            <span class="text-white" style="font-size: 2rem;">
+                                {{ chief.user.first_name|slice:":1" }}{{ chief.user.last_name|slice:":1" }}
+                            </span>
+                        </div>
+                        {% endif %}
+                        
+                        <h5 class="card-title fw-bold">{{ chief.user.get_full_name }}</h5>
+                        <p class="text-primary mb-2"><strong>{{ chief.title.name }}</strong></p>
+                        
+                        {% if chief.village %}
+                        <p class="text-muted small mb-0">
+                            <i class="bi bi-geo-alt me-1"></i> {{ chief.village }}
+                        </p>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a href="{% url 'accounts:chief_detail' chief.id %}" class="btn btn-outline-primary btn-sm">
+                            View Profile <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <nav class="mt-4" aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                </li>
+                {% endif %}
+                
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+        
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-people text-muted" style="font-size: 4rem;"></i>
+            <h4 class="mt-3">No chiefs registered yet</h4>
+            <p class="text-muted">Check back later.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

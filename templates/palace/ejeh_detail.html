@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ ejeh.title }} {{ ejeh.full_name }}{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <h1>{{ ejeh.title }} {{ ejeh.full_name }}</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'palace:home' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'palace:ejeh_list' %}">The Ejeh</a></li>
+                <li class="breadcrumb-item active">{{ ejeh.full_name }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <!-- Portrait Section -->
+            <div class="col-lg-4 mb-4" data-aos="fade-right">
+                <div class="card shadow-lg">
+                    {% if ejeh.official_portrait %}
+                    <img src="{{ ejeh.official_portrait.url }}" class="card-img-top" alt="{{ ejeh.full_name }}">
+                    {% else %}
+                    <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 400px;">
+                        <i class="bi bi-person-fill text-white" style="font-size: 8rem;"></i>
+                    </div>
+                    {% endif %}
+                    <div class="card-body text-center">
+                        <p class="text-royal fw-bold mb-1">
+                            {% if ejeh.reign_status == 'present' %}
+                            <i class="bi bi-crown-fill me-1"></i> Present Ejeh of Ankpa
+                            {% else %}
+                            <i class="bi bi-clock-history me-1"></i> Past Ejeh of Ankpa
+                            {% endif %}
+                        </p>
+                        <h4 class="card-title mb-1">{{ ejeh.title }} {{ ejeh.full_name }}</h4>
+                        <p class="text-muted">Reign: {{ ejeh.reign_period }}</p>
+                    </div>
+                </div>
+                
+                {% if ejeh.coronation_image %}
+                <div class="card mt-4 shadow">
+                    <img src="{{ ejeh.coronation_image.url }}" class="card-img-top" alt="Coronation">
+                    <div class="card-body text-center">
+                        <small class="text-muted">Coronation Photo</small>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Biography Section -->
+            <div class="col-lg-8" data-aos="fade-left">
+                <!-- Full Title -->
+                {% if ejeh.full_title_and_honours %}
+                <div class="card card-royal mb-4">
+                    <div class="card-header">
+                        <i class="bi bi-award me-2"></i> Full Title & Honours
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-0 font-accent fst-italic">{{ ejeh.full_title_and_honours }}</p>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Biography -->
+                {% if ejeh.biography %}
+                <div class="mb-4">
+                    <h3 class="border-bottom pb-2 mb-3">
+                        <i class="bi bi-person-lines-fill me-2 text-primary"></i> Biography
+                    </h3>
+                    <div class="lead">{{ ejeh.biography|linebreaks }}</div>
+                </div>
+                {% endif %}
+                
+                <!-- Early Life -->
+                {% if ejeh.early_life %}
+                <div class="mb-4">
+                    <h4 class="border-bottom pb-2 mb-3">Early Life</h4>
+                    <p>{{ ejeh.early_life|linebreaks }}</p>
+                </div>
+                {% endif %}
+                
+                <!-- Personal Details -->
+                <div class="row mb-4">
+                    {% if ejeh.birth_date or ejeh.birth_place %}
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5><i class="bi bi-calendar-heart me-2 text-primary"></i> Personal Details</h5>
+                                <ul class="list-unstyled mb-0">
+                                    {% if ejeh.birth_date %}
+                                    <li><strong>Birth Date:</strong> {{ ejeh.birth_date|date:"F d, Y" }}</li>
+                                    {% endif %}
+                                    {% if ejeh.birth_place %}
+                                    <li><strong>Birth Place:</strong> {{ ejeh.birth_place }}</li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if ejeh.education or ejeh.occupation_before_throne %}
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5><i class="bi bi-mortarboard me-2 text-primary"></i> Background</h5>
+                                <ul class="list-unstyled mb-0">
+                                    {% if ejeh.education %}
+                                    <li><strong>Education:</strong> {{ ejeh.education }}</li>
+                                    {% endif %}
+                                    {% if ejeh.occupation_before_throne %}
+                                    <li><strong>Previous Occupation:</strong> {{ ejeh.occupation_before_throne }}</li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Achievements -->
+                {% if ejeh.achievements %}
+                <div class="mb-4">
+                    <h4 class="border-bottom pb-2 mb-3">
+                        <i class="bi bi-trophy me-2 text-primary"></i> Achievements & Contributions
+                    </h4>
+                    <p>{{ ejeh.achievements|linebreaks }}</p>
+                </div>
+                {% endif %}
+                
+                <!-- Legacy -->
+                {% if ejeh.legacy %}
+                <div class="mb-4">
+                    <h4 class="border-bottom pb-2 mb-3">
+                        <i class="bi bi-star me-2 text-primary"></i> Legacy
+                    </h4>
+                    <p>{{ ejeh.legacy|linebreaks }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Related Gallery Images -->
+        {% if gallery_images %}
+        <div class="mt-5" data-aos="fade-up">
+            <h3 class="section-title text-center mb-4">Gallery</h3>
+            <div class="gallery-grid">
+                {% for image in gallery_images %}
+                <div class="gallery-item" data-lightbox="{{ image.image.url }}" data-title="{{ image.title }}">
+                    <img src="{{ image.image.url }}" alt="{{ image.title }}">
+                    <div class="gallery-overlay">
+                        <h6 class="gallery-title">{{ image.title }}</h6>
+                        <p class="gallery-caption">{{ image.get_occasion_type_display }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="text-center mt-4">
+                <a href="{% url 'palace:gallery' %}?ejeh={{ ejeh.pk }}" class="btn btn-outline-primary">
+                    View More Photos <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

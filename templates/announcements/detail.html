@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ announcement.title }}{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <h1>{{ announcement.get_announcement_type_display }}</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'palace:home' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'announcements:list' %}">Announcements</a></li>
+                <li class="breadcrumb-item active">{{ announcement.title|truncatewords:5 }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<article class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Announcement Header -->
+                <div class="mb-4" data-aos="fade-up">
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        <span class="badge bg-{{ announcement.priority_badge_class }}">
+                            {{ announcement.get_priority_display }}
+                        </span>
+                        {% if announcement.category %}
+                        <span class="badge bg-secondary">{{ announcement.category.name }}</span>
+                        {% endif %}
+                        {% if announcement.is_pinned %}
+                        <span class="badge bg-danger"><i class="bi bi-pin-angle-fill me-1"></i> Pinned</span>
+                        {% endif %}
+                    </div>
+                    <h1 class="display-5 fw-bold">{{ announcement.title }}</h1>
+                    <div class="d-flex flex-wrap gap-3 text-muted">
+                        <span><i class="bi bi-calendar3 me-1"></i> {{ announcement.publish_date|date:"F d, Y" }}</span>
+                        {% if announcement.author %}
+                        <span><i class="bi bi-person me-1"></i> {{ announcement.author.get_full_name }}</span>
+                        {% endif %}
+                        <span><i class="bi bi-eye me-1"></i> {{ announcement.view_count }} views</span>
+                    </div>
+                </div>
+                
+                <!-- Featured Image -->
+                {% if announcement.featured_image %}
+                <div class="mb-4" data-aos="fade-up">
+                    <img src="{{ announcement.featured_image.url }}" class="img-fluid rounded shadow" alt="{{ announcement.title }}">
+                </div>
+                {% endif %}
+                
+                <!-- Content -->
+                <div class="announcement-content card" data-aos="fade-up">
+                    <div class="card-body p-4">
+                        {% if announcement.excerpt %}
+                        <p class="lead border-bottom pb-3 mb-4">{{ announcement.excerpt }}</p>
+                        {% endif %}
+                        <div class="content">
+                            {{ announcement.content|linebreaks }}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Attachment -->
+                {% if announcement.attachment %}
+                <div class="mt-4" data-aos="fade-up">
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h6><i class="bi bi-paperclip me-2"></i> Attachment</h6>
+                            <a href="{{ announcement.attachment.url }}" class="btn btn-outline-primary btn-sm" target="_blank">
+                                <i class="bi bi-download me-1"></i> Download Document
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Share -->
+                <div class="mt-5 pt-4 border-top" data-aos="fade-up">
+                    <h6 class="mb-3">Share this announcement:</h6>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm" data-share="{{ request.build_absolute_uri }}" data-title="{{ announcement.title }}">
+                            <i class="bi bi-share me-1"></i> Share
+                        </button>
+                        <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri|urlencode }}&text={{ announcement.title|urlencode }}" 
+                           class="btn btn-outline-dark btn-sm" target="_blank">
+                            <i class="bi bi-twitter-x"></i>
+                        </a>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri|urlencode }}" 
+                           class="btn btn-outline-primary btn-sm" target="_blank">
+                            <i class="bi bi-facebook"></i>
+                        </a>
+                        <a href="https://wa.me/?text={{ announcement.title|urlencode }}%20{{ request.build_absolute_uri|urlencode }}" 
+                           class="btn btn-outline-success btn-sm" target="_blank">
+                            <i class="bi bi-whatsapp"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                {% if related_announcements %}
+                <div class="card" data-aos="fade-left">
+                    <div class="card-header bg-primary text-white">
+                        <i class="bi bi-megaphone me-2"></i> Related Announcements
+                    </div>
+                    <div class="card-body">
+                        {% for related in related_announcements %}
+                        <div class="mb-3 {% if not forloop.last %}pb-3 border-bottom{% endif %}">
+                            <h6 class="mb-1">
+                                <a href="{{ related.get_absolute_url }}" class="text-dark">
+                                    {{ related.title|truncatewords:10 }}
+                                </a>
+                            </h6>
+                            <small class="text-muted">{{ related.publish_date|date:"M d, Y" }}</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</article>
+{% endblock %}

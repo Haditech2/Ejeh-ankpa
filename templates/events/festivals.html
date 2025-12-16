@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Traditional Festivals{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <h1>Traditional Festivals</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'palace:home' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'events:list' %}">Events</a></li>
+                <li class="breadcrumb-item active">Festivals</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <p class="lead text-muted">Discover the rich cultural heritage of Ankpa through our traditional festivals and celebrations.</p>
+        </div>
+        
+        {% if festivals %}
+        <div class="row">
+            {% for festival in festivals %}
+            <div class="col-md-6 mb-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0 }}00">
+                <div class="card h-100 shadow">
+                    <div class="row g-0">
+                        <div class="col-md-5">
+                            {% if festival.featured_image %}
+                            <img src="{{ festival.featured_image.url }}" class="img-fluid rounded-start h-100" 
+                                 style="object-fit: cover;" alt="{{ festival.name }}">
+                            {% else %}
+                            <div class="bg-primary d-flex align-items-center justify-content-center h-100 rounded-start" 
+                                 style="min-height: 200px;">
+                                <i class="bi bi-music-note-beamed text-white" style="font-size: 4rem;"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-7">
+                            <div class="card-body d-flex flex-column h-100">
+                                <h5 class="card-title text-primary">{{ festival.name }}</h5>
+                                {% if festival.traditional_name %}
+                                <p class="text-muted fst-italic mb-2">{{ festival.traditional_name }}</p>
+                                {% endif %}
+                                
+                                {% if festival.month_held %}
+                                <div class="mb-2">
+                                    <small class="text-muted">
+                                        <i class="bi bi-calendar-event me-1"></i> Celebrated in {{ festival.get_month_held_display }}
+                                    </small>
+                                </div>
+                                {% endif %}
+                                
+                                {% if festival.duration %}
+                                <div class="mb-2">
+                                    <small class="text-muted">
+                                        <i class="bi bi-clock-history me-1"></i> {{ festival.duration }}
+                                    </small>
+                                </div>
+                                {% endif %}
+                                
+                                <p class="card-text flex-grow-1">
+                                    {{ festival.description|truncatewords:25 }}
+                                </p>
+                                
+                                <a href="{{ festival.get_absolute_url }}" class="btn btn-outline-primary btn-sm">
+                                    Learn More <i class="bi bi-arrow-right ms-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-music-note-beamed text-muted" style="font-size: 4rem;"></i>
+            <h4 class="mt-3">No festivals listed yet</h4>
+            <p class="text-muted">Check back later for information about our traditional festivals.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

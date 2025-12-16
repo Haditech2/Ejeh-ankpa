@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Message Sent{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6 text-center">
+                <div class="card shadow" data-aos="zoom-in">
+                    <div class="card-body p-5">
+                        <div class="mb-4">
+                            <i class="bi bi-check-circle text-success" style="font-size: 5rem;"></i>
+                        </div>
+                        <h2 class="display-6 fw-bold mb-3">Message Sent Successfully!</h2>
+                        <p class="text-muted mb-4">
+                            Thank you for contacting Ejeh's Palace. We have received your message and will respond as soon as possible.
+                        </p>
+                        <div class="d-flex flex-wrap justify-content-center gap-3">
+                            <a href="{% url 'palace:home' %}" class="btn btn-primary">
+                                <i class="bi bi-house me-2"></i> Back to Home
+                            </a>
+                            <a href="{% url 'community:contact' %}" class="btn btn-outline-primary">
+                                <i class="bi bi-envelope me-2"></i> Send Another Message
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

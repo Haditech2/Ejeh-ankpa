@@ -1,0 +1,335 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    
+    <!-- SEO Meta Tags -->
+    <title>{% block title %}Ejeh Ankpa Palace{% endblock %} | The Traditional Institution of Ankpa</title>
+    <meta name="description" content="{% block meta_description %}Official website of the Ejeh Ankpa Palace - The Traditional Institution of the Ejeh of Ankpa Kingdom. Preserving culture, heritage, and community.{% endblock %}">
+    <meta name="keywords" content="{% block meta_keywords %}Ejeh Ankpa, Ankpa Kingdom, Traditional Institution, Nigerian Monarchy, Kogi State, Cultural Heritage{% endblock %}">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="{% block og_title %}Ejeh Ankpa Palace{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Official website of the Traditional Institution of the Ejeh of Ankpa{% endblock %}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    {% if palace_info.logo %}
+    <meta property="og:image" content="{{ palace_info.logo.url }}">
+    {% endif %}
+    
+    <!-- Favicon -->
+    {% if palace_info.favicon %}
+    <link rel="icon" href="{{ palace_info.favicon.url }}" type="image/x-icon">
+    {% else %}
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    {% endif %}
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar bg-dark text-light py-2 d-none d-md-block">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    {% if palace_info.phone %}
+                    <span class="me-3">
+                        <i class="bi bi-telephone-fill me-1"></i> {{ palace_info.phone }}
+                    </span>
+                    {% endif %}
+                    {% if palace_info.email %}
+                    <span>
+                        <i class="bi bi-envelope-fill me-1"></i> {{ palace_info.email }}
+                    </span>
+                    {% endif %}
+                </div>
+                <div class="col-md-6 text-end">
+                    <!-- Social Links -->
+                    {% if palace_info.facebook_url %}
+                    <a href="{{ palace_info.facebook_url }}" class="text-light me-2" target="_blank"><i class="bi bi-facebook"></i></a>
+                    {% endif %}
+                    {% if palace_info.twitter_url %}
+                    <a href="{{ palace_info.twitter_url }}" class="text-light me-2" target="_blank"><i class="bi bi-twitter-x"></i></a>
+                    {% endif %}
+                    {% if palace_info.instagram_url %}
+                    <a href="{{ palace_info.instagram_url }}" class="text-light me-2" target="_blank"><i class="bi bi-instagram"></i></a>
+                    {% endif %}
+                    {% if palace_info.youtube_url %}
+                    <a href="{{ palace_info.youtube_url }}" class="text-light" target="_blank"><i class="bi bi-youtube"></i></a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'palace:home' %}">
+                {% if palace_info.logo %}
+                <img src="{{ palace_info.logo.url }}" alt="Palace Logo" height="50" class="me-2">
+                {% else %}
+                <i class="bi bi-bank2 fs-2 text-primary me-2"></i>
+                {% endif %}
+                <span class="brand-text">
+                    <span class="fw-bold text-primary">Ejeh Ankpa</span>
+                    <small class="d-block text-muted">Palace</small>
+                </span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'palace:home' %}">Home</a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="ejehDropdown" data-bs-toggle="dropdown">
+                            The Ejeh
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'palace:present_ejeh' %}">Present Ejeh</a></li>
+                            <li><a class="dropdown-item" href="{% url 'palace:past_ejehs' %}">Past Ejehs</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'accounts:chiefs_list' %}">Council of Chiefs</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'palace:gallery' %}">Royal Gallery</a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="historyDropdown" data-bs-toggle="dropdown">
+                            History & Culture
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'palace:history_list' %}">Our History</a></li>
+                            <li><a class="dropdown-item" href="{% url 'palace:traditional_titles' %}">Traditional Titles</a></li>
+                            <li><a class="dropdown-item" href="{% url 'events:festivals' %}">Festivals</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'announcements:list' %}">Announcements</a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'events:list' %}">Events</a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'community:contact' %}">Contact</a>
+                    </li>
+                    
+                    {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i> {{ user.first_name }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{% url 'accounts:profile' %}"><i class="bi bi-person me-2"></i> My Profile</a></li>
+                            {% if user.can_manage_content %}
+                            <li><a class="dropdown-item" href="{% url 'accounts:admin_dashboard' %}"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a></li>
+                            {% endif %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'accounts:logout' %}"><i class="bi bi-box-arrow-right me-2"></i> Logout</a></li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-outline-primary btn-sm ms-2 px-3" href="{% url 'accounts:login' %}">Sign In</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Flash Messages -->
+    {% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Newsletter Section -->
+    {% block newsletter %}
+    <section class="newsletter-section py-5 bg-primary text-white">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <h3 class="fw-bold mb-2">Stay Connected with the Palace</h3>
+                    <p class="mb-0 opacity-75">Subscribe to receive announcements, event updates, and palace news.</p>
+                </div>
+                <div class="col-lg-6">
+                    <form action="{% url 'community:newsletter_subscribe' %}" method="post" class="d-flex gap-2">
+                        {% csrf_token %}
+                        <input type="email" name="email" class="form-control form-control-lg" placeholder="Enter your email" required>
+                        <input type="hidden" name="name" value="">
+                        <button type="submit" class="btn btn-light btn-lg px-4">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endblock %}
+    
+    <!-- Footer -->
+    <footer class="footer bg-dark text-light pt-5 pb-3">
+        <div class="container">
+            <div class="row">
+                <!-- About -->
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <h5 class="text-white fw-bold mb-3">
+                        <i class="bi bi-bank2 me-2"></i> Ejeh Ankpa Palace
+                    </h5>
+                    <p class="text-light opacity-75">
+                        {% if palace_info.about %}
+                        {{ palace_info.about|truncatewords:30 }}
+                        {% else %}
+                        The Traditional Institution of the Ejeh of Ankpa, preserving the rich cultural heritage and traditions of Ankpa Kingdom.
+                        {% endif %}
+                    </p>
+                    <div class="social-links mt-3">
+                        {% if palace_info.facebook_url %}
+                        <a href="{{ palace_info.facebook_url }}" class="btn btn-outline-light btn-sm me-1" target="_blank"><i class="bi bi-facebook"></i></a>
+                        {% endif %}
+                        {% if palace_info.twitter_url %}
+                        <a href="{{ palace_info.twitter_url }}" class="btn btn-outline-light btn-sm me-1" target="_blank"><i class="bi bi-twitter-x"></i></a>
+                        {% endif %}
+                        {% if palace_info.instagram_url %}
+                        <a href="{{ palace_info.instagram_url }}" class="btn btn-outline-light btn-sm me-1" target="_blank"><i class="bi bi-instagram"></i></a>
+                        {% endif %}
+                        {% if palace_info.youtube_url %}
+                        <a href="{{ palace_info.youtube_url }}" class="btn btn-outline-light btn-sm" target="_blank"><i class="bi bi-youtube"></i></a>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Quick Links -->
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h5 class="text-white fw-bold mb-3">Quick Links</h5>
+                    <ul class="list-unstyled footer-links">
+                        <li><a href="{% url 'palace:home' %}">Home</a></li>
+                        <li><a href="{% url 'palace:about' %}">About</a></li>
+                        <li><a href="{% url 'palace:present_ejeh' %}">The Ejeh</a></li>
+                        <li><a href="{% url 'palace:gallery' %}">Gallery</a></li>
+                        <li><a href="{% url 'announcements:list' %}">Announcements</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Explore -->
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h5 class="text-white fw-bold mb-3">Explore</h5>
+                    <ul class="list-unstyled footer-links">
+                        <li><a href="{% url 'palace:history_list' %}">History</a></li>
+                        <li><a href="{% url 'events:festivals' %}">Festivals</a></li>
+                        <li><a href="{% url 'events:list' %}">Events</a></li>
+                        <li><a href="{% url 'accounts:chiefs_list' %}">Council of Chiefs</a></li>
+                        <li><a href="{% url 'community:feedback_list' %}">Testimonials</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Contact -->
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <h5 class="text-white fw-bold mb-3">Contact the Palace</h5>
+                    <ul class="list-unstyled text-light opacity-75">
+                        {% if palace_info.address %}
+                        <li class="mb-2">
+                            <i class="bi bi-geo-alt-fill me-2"></i> {{ palace_info.address|linebreaksbr }}
+                        </li>
+                        {% endif %}
+                        {% if palace_info.phone %}
+                        <li class="mb-2">
+                            <i class="bi bi-telephone-fill me-2"></i> {{ palace_info.phone }}
+                        </li>
+                        {% endif %}
+                        {% if palace_info.email %}
+                        <li class="mb-2">
+                            <i class="bi bi-envelope-fill me-2"></i> {{ palace_info.email }}
+                        </li>
+                        {% endif %}
+                    </ul>
+                    <a href="{% url 'community:contact' %}" class="btn btn-outline-light btn-sm mt-2">
+                        <i class="bi bi-chat-dots me-1"></i> Send a Message
+                    </a>
+                </div>
+            </div>
+            
+            <hr class="border-secondary my-4">
+            
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="mb-0 text-light opacity-75">
+                        &copy; {% now "Y" %} Ejeh Ankpa Palace. All Rights Reserved.
+                    </p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <small class="text-light opacity-50">
+                        Preserving Heritage, Building Community
+                    </small>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Back to Top Button -->
+    <button id="backToTop" class="btn btn-primary btn-floating" title="Back to top">
+        <i class="bi bi-arrow-up"></i>
+    </button>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- AOS Animation -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="{% static 'js/main.js' %}"></script>
+    
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

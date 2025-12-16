@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Chief Profile{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <h1>Chief Profile</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'palace:home' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'accounts:chiefs_list' %}">Council of Chiefs</a></li>
+                <li class="breadcrumb-item active">{{ chief.user.get_full_name }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <!-- Profile Card -->
+            <div class="col-lg-4 mb-4" data-aos="fade-right">
+                <div class="card shadow text-center">
+                    <div class="card-body p-4">
+                        {% if chief.user.profile_image %}
+                        <img src="{{ chief.user.profile_image.url }}" class="rounded-circle mb-3" 
+                             style="width: 180px; height: 180px; object-fit: cover;" alt="{{ chief.user.get_full_name }}">
+                        {% else %}
+                        <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center mx-auto mb-3" 
+                             style="width: 180px; height: 180px;">
+                            <span class="text-white" style="font-size: 3rem;">
+                                {{ chief.user.first_name|slice:":1" }}{{ chief.user.last_name|slice:":1" }}
+                            </span>
+                        </div>
+                        {% endif %}
+                        
+                        <h3 class="fw-bold mb-1">{{ chief.user.get_full_name }}</h3>
+                        <p class="text-primary h5 mb-3">{{ chief.title.name }}</p>
+                        
+                        {% if chief.title.traditional_name %}
+                        <p class="text-muted fst-italic">{{ chief.title.traditional_name }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Details -->
+            <div class="col-lg-8">
+                <!-- About -->
+                <div class="card shadow mb-4" data-aos="fade-left">
+                    <div class="card-header bg-primary text-white">
+                        <i class="bi bi-person me-2"></i> About
+                    </div>
+                    <div class="card-body p-4">
+                        {% if chief.user.bio %}
+                        <p>{{ chief.user.bio }}</p>
+                        {% else %}
+                        <p class="text-muted fst-italic">No biography available.</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Chieftaincy Details -->
+                <div class="card shadow mb-4" data-aos="fade-left" data-aos-delay="100">
+                    <div class="card-header bg-white">
+                        <i class="bi bi-award me-2 text-primary"></i> Chieftaincy Details
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-muted mb-1">Title</h6>
+                                <p class="mb-0 fw-bold">{{ chief.title.name }}</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-muted mb-1">Conferred Date</h6>
+                                <p class="mb-0">{{ chief.conferred_date|date:"F d, Y" }}</p>
+                            </div>
+                            {% if chief.village %}
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-muted mb-1">Village</h6>
+                                <p class="mb-0">{{ chief.village }}</p>
+                            </div>
+                            {% endif %}
+                            {% if chief.clan %}
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-muted mb-1">Clan</h6>
+                                <p class="mb-0">{{ chief.clan }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        {% if chief.responsibilities %}
+                        <hr>
+                        <h6 class="text-muted mb-2">Responsibilities</h6>
+                        <p class="mb-0">{{ chief.responsibilities }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Title Description -->
+                {% if chief.title.description %}
+                <div class="card shadow" data-aos="fade-left" data-aos-delay="200">
+                    <div class="card-header bg-white">
+                        <i class="bi bi-info-circle me-2 text-primary"></i> About This Title
+                    </div>
+                    <div class="card-body p-4">
+                        <p class="mb-0">{{ chief.title.description }}</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Back Button -->
+        <div class="text-center mt-4">
+            <a href="{% url 'accounts:chiefs_list' %}" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-left me-2"></i> Back to Council of Chiefs
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

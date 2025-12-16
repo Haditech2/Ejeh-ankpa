@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Traditional Titles{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <h1>Traditional Titles</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'palace:home' %}">Home</a></li>
+                <li class="breadcrumb-item active">Traditional Titles</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <p class="lead text-muted">
+                Traditional titles in the Ankpa Kingdom represent positions of honor, responsibility, 
+                and service to the community and the Ejeh.
+            </p>
+        </div>
+        
+        {% if titles %}
+        <div class="row">
+            {% for title in titles %}
+            <div class="col-md-6 mb-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0 }}00">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start mb-3">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                 style="width: 50px; height: 50px; flex-shrink: 0;">
+                                <i class="bi bi-award" style="font-size: 1.5rem;"></i>
+                            </div>
+                            <div>
+                                <h5 class="card-title mb-1">{{ title.name }}</h5>
+                                {% if title.traditional_name %}
+                                <p class="text-muted fst-italic mb-0">{{ title.traditional_name }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        {% if title.category %}
+                        <span class="badge bg-secondary mb-3">{{ title.category }}</span>
+                        {% endif %}
+                        
+                        {% if title.description %}
+                        <p class="card-text">{{ title.description }}</p>
+                        {% endif %}
+                        
+                        {% if title.responsibilities %}
+                        <div class="mt-3">
+                            <h6 class="text-primary"><i class="bi bi-list-check me-2"></i> Responsibilities</h6>
+                            <p class="small text-muted">{{ title.responsibilities|truncatewords:30 }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% if title.rank %}
+                    <div class="card-footer bg-transparent">
+                        <small class="text-muted"><i class="bi bi-bar-chart me-1"></i> Rank: {{ title.rank }}</small>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-award text-muted" style="font-size: 4rem;"></i>
+            <h4 class="mt-3">No titles documented yet</h4>
+            <p class="text-muted">Check back later for information about traditional titles.</p>
+        </div>
+        {% endif %}
+        
+        <!-- Learn More Section -->
+        <div class="text-center mt-5 pt-4" data-aos="fade-up">
+            <h4>Learn More About Ankpa Culture</h4>
+            <p class="text-muted mb-4">Explore our rich history and traditions</p>
+            <div class="d-flex flex-wrap justify-content-center gap-3">
+                <a href="{% url 'palace:history_list' %}" class="btn btn-outline-primary">
+                    <i class="bi bi-book me-2"></i> History & Culture
+                </a>
+                <a href="{% url 'accounts:chiefs_list' %}" class="btn btn-outline-primary">
+                    <i class="bi bi-people me-2"></i> Council of Chiefs
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

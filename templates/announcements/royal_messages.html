@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Royal Messages{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <h1>Royal Messages</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'palace:home' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'announcements:list' %}">Announcements</a></li>
+                <li class="breadcrumb-item active">Royal Messages</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <p class="lead text-muted">
+                Official messages and addresses from the Ejeh of Ankpa to the community.
+            </p>
+        </div>
+        
+        {% if messages_list %}
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                {% for message in messages_list %}
+                <div class="card mb-4 shadow" data-aos="fade-up" data-aos-delay="{{ forloop.counter0 }}00">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <span><i class="bi bi-chat-square-quote me-2"></i> {{ message.get_message_type_display }}</span>
+                        <span>{{ message.date_issued|date:"F d, Y" }}</span>
+                    </div>
+                    <div class="card-body p-4">
+                        <h4 class="card-title">{{ message.title }}</h4>
+                        
+                        {% if message.ejeh %}
+                        <p class="text-muted mb-3">
+                            <i class="bi bi-person-badge me-1"></i> From: HRM {{ message.ejeh.royal_name }}
+                        </p>
+                        {% endif %}
+                        
+                        <div class="royal-message-content border-start border-primary border-4 ps-4 py-2 bg-light rounded">
+                            {{ message.content|linebreaks }}
+                        </div>
+                        
+                        {% if message.signature_image %}
+                        <div class="mt-4 text-end">
+                            <img src="{{ message.signature_image.url }}" alt="Royal Signature" 
+                                 style="max-height: 80px;" class="img-fluid">
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                <i class="bi bi-eye me-1"></i> {{ message.view_count }} views
+                            </small>
+                            <div class="d-flex gap-2">
+                                <a href="https://wa.me/?text={{ message.title|urlencode }}%20{{ request.build_absolute_uri|urlencode }}" 
+                                   class="btn btn-outline-success btn-sm" target="_blank">
+                                    <i class="bi bi-whatsapp"></i>
+                                </a>
+                                <button class="btn btn-outline-primary btn-sm" data-share="{{ request.build_absolute_uri }}" data-title="{{ message.title }}">
+                                    <i class="bi bi-share"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <nav class="mt-4" aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                </li>
+                {% endif %}
+                
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+        
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-chat-square-quote text-muted" style="font-size: 4rem;"></i>
+            <h4 class="mt-3">No royal messages at this time</h4>
+            <p class="text-muted">Check back later for messages from the palace.</p>
+            <a href="{% url 'announcements:list' %}" class="btn btn-primary mt-3">
+                <i class="bi bi-arrow-left me-2"></i> Back to Announcements
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

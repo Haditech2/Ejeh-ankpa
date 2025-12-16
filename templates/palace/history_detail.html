@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ article.title }}{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <h1>{{ article.title }}</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'palace:home' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'palace:history_list' %}">History & Culture</a></li>
+                <li class="breadcrumb-item active">{{ article.title|truncatewords:5 }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<article class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Article Header -->
+                <div class="mb-4" data-aos="fade-up">
+                    <span class="badge badge-royal mb-3">{{ article.get_article_type_display }}</span>
+                    <h1 class="display-5 fw-bold">{{ article.title }}</h1>
+                    <div class="d-flex flex-wrap gap-3 text-muted">
+                        {% if article.author %}
+                        <span><i class="bi bi-person me-1"></i> {{ article.author }}</span>
+                        {% endif %}
+                        <span><i class="bi bi-calendar3 me-1"></i> {{ article.created_at|date:"F d, Y" }}</span>
+                        <span><i class="bi bi-eye me-1"></i> {{ article.view_count }} views</span>
+                    </div>
+                </div>
+                
+                <!-- Featured Image -->
+                {% if article.featured_image %}
+                <div class="mb-4" data-aos="fade-up">
+                    <img src="{{ article.featured_image.url }}" class="img-fluid rounded shadow" alt="{{ article.title }}">
+                </div>
+                {% endif %}
+                
+                <!-- Article Content -->
+                <div class="article-content" data-aos="fade-up">
+                    {{ article.content|linebreaks }}
+                </div>
+                
+                <!-- Video -->
+                {% if article.video_url %}
+                <div class="mt-4" data-aos="fade-up">
+                    <h5><i class="bi bi-play-circle me-2"></i> Video</h5>
+                    <div class="ratio ratio-16x9">
+                        <iframe src="{{ article.video_url }}" allowfullscreen></iframe>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Share Buttons -->
+                <div class="mt-5 pt-4 border-top" data-aos="fade-up">
+                    <h6 class="mb-3">Share this article:</h6>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm" data-share="{{ request.build_absolute_uri }}" data-title="{{ article.title }}">
+                            <i class="bi bi-share me-1"></i> Share
+                        </button>
+                        <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri|urlencode }}&text={{ article.title|urlencode }}" 
+                           class="btn btn-outline-dark btn-sm" target="_blank">
+                            <i class="bi bi-twitter-x"></i>
+                        </a>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri|urlencode }}" 
+                           class="btn btn-outline-primary btn-sm" target="_blank">
+                            <i class="bi bi-facebook"></i>
+                        </a>
+                        <a href="https://wa.me/?text={{ article.title|urlencode }}%20{{ request.build_absolute_uri|urlencode }}" 
+                           class="btn btn-outline-success btn-sm" target="_blank">
+                            <i class="bi bi-whatsapp"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Related Articles -->
+                {% if related_articles %}
+                <div class="card mb-4" data-aos="fade-left">
+                    <div class="card-header bg-primary text-white">
+                        <i class="bi bi-journal-text me-2"></i> Related Articles
+                    </div>
+                    <div class="card-body">
+                        {% for related in related_articles %}
+                        <div class="d-flex mb-3 {% if not forloop.last %}pb-3 border-bottom{% endif %}">
+                            {% if related.featured_image %}
+                            <img src="{{ related.featured_image.url }}" class="me-3 rounded" 
+                                 style="width: 80px; height: 60px; object-fit: cover;" alt="{{ related.title }}">
+                            {% endif %}
+                            <div>
+                                <h6 class="mb-1">
+                                    <a href="{{ related.get_absolute_url }}" class="text-dark">
+                                        {{ related.title|truncatewords:8 }}
+                                    </a>
+                                </h6>
+                                <small class="text-muted">{{ related.created_at|date:"M d, Y" }}</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Quick Links -->
+                <div class="card" data-aos="fade-left" data-aos-delay="100">
+                    <div class="card-header bg-secondary text-white">
+                        <i class="bi bi-link-45deg me-2"></i> Explore More
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <a href="{% url 'palace:history_list' %}?type=history" class="list-group-item list-group-item-action">
+                            <i class="bi bi-clock-history me-2"></i> Kingdom History
+                        </a>
+                        <a href="{% url 'palace:history_list' %}?type=tradition" class="list-group-item list-group-item-action">
+                            <i class="bi bi-flag me-2"></i> Traditional Practices
+                        </a>
+                        <a href="{% url 'palace:history_list' %}?type=culture" class="list-group-item list-group-item-action">
+                            <i class="bi bi-music-note me-2"></i> Cultural Heritage
+                        </a>
+                        <a href="{% url 'palace:traditional_titles' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-award me-2"></i> Traditional Titles
+                        </a>
+                        <a href="{% url 'events:festivals' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-calendar-event me-2"></i> Festivals
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</article>
+{% endblock %}

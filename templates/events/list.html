@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Events{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <h1>Events & Ceremonies</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'palace:home' %}">Home</a></li>
+                <li class="breadcrumb-item active">Events</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<section class="py-5">
+    <div class="container">
+        <!-- Featured Events -->
+        {% if featured_events %}
+        <div class="mb-5" data-aos="fade-up">
+            <h4 class="mb-3"><i class="bi bi-star-fill text-warning me-2"></i> Featured Events</h4>
+            <div class="row">
+                {% for event in featured_events %}
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100 border-warning">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="event-date-badge me-3" style="position: relative; top: 0; left: 0;">
+                                    <span class="day">{{ event.start_date|date:"d" }}</span>
+                                    <span class="month">{{ event.start_date|date:"M" }}</span>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">{{ event.title }}</h6>
+                                    <small class="text-muted"><i class="bi bi-geo-alt me-1"></i> {{ event.venue }}</small>
+                                </div>
+                            </div>
+                            <a href="{{ event.get_absolute_url }}" class="btn btn-outline-warning btn-sm w-100">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Filter Tabs -->
+        <div class="mb-4" data-aos="fade-up">
+            <ul class="nav nav-pills justify-content-center">
+                <li class="nav-item">
+                    <a class="nav-link {% if current_time == 'upcoming' %}active{% endif %}" href="?time=upcoming">
+                        <i class="bi bi-calendar-plus me-1"></i> Upcoming
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if current_time == 'today' %}active{% endif %}" href="?time=today">
+                        <i class="bi bi-calendar-day me-1"></i> Today
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if current_time == 'past' %}active{% endif %}" href="?time=past">
+                        <i class="bi bi-calendar-check me-1"></i> Past Events
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'events:calendar' %}">
+                        <i class="bi bi-calendar3 me-1"></i> Calendar View
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Filter Section -->
+        <div class="card mb-4" data-aos="fade-up">
+            <div class="card-body">
+                <form method="get" class="row g-3 align-items-end">
+                    <input type="hidden" name="time" value="{{ current_time }}">
+                    <div class="col-md-3">
+                        <label class="form-label">Category</label>
+                        <select name="category" class="form-select">
+                            <option value="">All Categories</option>
+                            {% for category in categories %}
+                            <option value="{{ category.slug }}" {% if current_category == category.slug %}selected{% endif %}>
+                                {{ category.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Event Type</label>
+                        <select name="type" class="form-select">
+                            <option value="">All Types</option>
+                            {% for value, label in event_types %}
+                            <option value="{{ value }}" {% if current_type == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Search</label>
+                        <input type="text" name="search" class="form-control" placeholder="Search events..." 
+                               value="{{ request.GET.search }}">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-search me-1"></i> Filter
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Events List -->
+        {% if events %}
+        <div class="row">
+            {% for event in events %}
+            <div class="col-md-6 col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0 }}00">
+                <div class="card h-100 event-card">
+                    <div class="event-date-badge">
+                        <span class="day">{{ event.start_date|date:"d" }}</span>
+                        <span class="month">{{ event.start_date|date:"M" }}</span>
+                    </div>
+                    {% if event.featured_image %}
+                    <img src="{{ event.featured_image.url }}" class="card-img-top" alt="{{ event.title }}" style="height: 180px; object-fit: cover;">
+                    {% else %}
+                    <div class="card-img-top bg-primary d-flex align-items-center justify-content-center" style="height: 180px;">
+                        <i class="bi bi-calendar-event text-white" style="font-size: 3rem;"></i>
+                    </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <span class="badge bg-primary mb-2">{{ event.get_event_type_display }}</span>
+                        {% if event.is_cancelled %}
+                        <span class="badge bg-danger mb-2">Cancelled</span>
+                        {% endif %}
+                        <h5 class="card-title">{{ event.title }}</h5>
+                        <p class="text-muted small mb-2">
+                            <i class="bi bi-clock me-1"></i> {{ event.start_date|date:"g:i A" }}
+                            {% if event.end_date %} - {{ event.end_date|date:"g:i A" }}{% endif %}
+                        </p>
+                        <p class="text-muted small mb-0">
+                            <i class="bi bi-geo-alt me-1"></i> {{ event.venue }}
+                        </p>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        {% if event.is_upcoming %}
+                        <div class="small text-muted mb-2">
+                            <i class="bi bi-hourglass-split me-1"></i> {{ event.days_until }} days to go
+                        </div>
+                        {% endif %}
+                        <a href="{{ event.get_absolute_url }}" class="btn btn-outline-primary btn-sm w-100">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <nav class="mt-4" aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}&time={{ current_time }}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}">Previous</a>
+                </li>
+                {% endif %}
+                
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item"><a class="page-link" href="?page={{ num }}&time={{ current_time }}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}">{{ num }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}&time={{ current_time }}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}">Next</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+        
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-calendar-x text-muted" style="font-size: 4rem;"></i>
+            <h4 class="mt-3">No events found</h4>
+            <p class="text-muted">Check back later for upcoming events.</p>
+        </div>
+        {% endif %}
+        
+        <!-- Traditional Festivals Link -->
+        <div class="text-center mt-5">
+            <a href="{% url 'events:festivals' %}" class="btn btn-outline-primary btn-lg">
+                <i class="bi bi-music-note-beamed me-2"></i> Explore Traditional Festivals
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <h1>Edit Profile</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'palace:home' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'accounts:profile' %}">Profile</a></li>
+                <li class="breadcrumb-item active">Edit</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+                {% endif %}
+                
+                <div class="card shadow" data-aos="fade-up">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="bi bi-person-gear me-2"></i> Edit Your Profile</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                            {% csrf_token %}
+                            
+                            <!-- Profile Image -->
+                            <div class="mb-4 text-center">
+                                {% if user.profile_image %}
+                                <img src="{{ user.profile_image.url }}" class="rounded-circle mb-3" 
+                                     id="profilePreview" style="width: 120px; height: 120px; object-fit: cover;">
+                                {% else %}
+                                <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center mx-auto mb-3" 
+                                     id="profilePreview" style="width: 120px; height: 120px;">
+                                    <span class="text-white" style="font-size: 2.5rem;">
+                                        {{ user.first_name|slice:":1" }}{{ user.last_name|slice:":1" }}
+                                    </span>
+                                </div>
+                                {% endif %}
+                                <div>
+                                    <label class="btn btn-outline-primary btn-sm">
+                                        <i class="bi bi-camera me-1"></i> Change Photo
+                                        <input type="file" name="profile_image" id="profileImageInput" 
+                                               class="d-none" accept="image/*">
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="first_name" class="form-label">First Name</label>
+                                    <input type="text" class="form-control {% if form.first_name.errors %}is-invalid{% endif %}" 
+                                           id="first_name" name="first_name" value="{{ form.first_name.value|default:user.first_name }}">
+                                    {% if form.first_name.errors %}
+                                    <div class="invalid-feedback">{{ form.first_name.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="last_name" class="form-label">Last Name</label>
+                                    <input type="text" class="form-control {% if form.last_name.errors %}is-invalid{% endif %}" 
+                                           id="last_name" name="last_name" value="{{ form.last_name.value|default:user.last_name }}">
+                                    {% if form.last_name.errors %}
+                                    <div class="invalid-feedback">{{ form.last_name.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email Address</label>
+                                <input type="email" class="form-control" id="email" value="{{ user.email }}" disabled>
+                                <div class="form-text">Email cannot be changed.</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control {% if form.phone.errors %}is-invalid{% endif %}" 
+                                       id="phone" name="phone" value="{{ form.phone.value|default:user.phone }}">
+                                {% if form.phone.errors %}
+                                <div class="invalid-feedback">{{ form.phone.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Address</label>
+                                <textarea class="form-control {% if form.address.errors %}is-invalid{% endif %}" 
+                                          id="address" name="address" rows="2">{{ form.address.value|default:user.address }}</textarea>
+                                {% if form.address.errors %}
+                                <div class="invalid-feedback">{{ form.address.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="bio" class="form-label">Bio</label>
+                                <textarea class="form-control {% if form.bio.errors %}is-invalid{% endif %}" 
+                                          id="bio" name="bio" rows="4" 
+                                          placeholder="Tell us about yourself...">{{ form.bio.value|default:user.bio }}</textarea>
+                                {% if form.bio.errors %}
+                                <div class="invalid-feedback">{{ form.bio.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="d-flex gap-3">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-lg me-2"></i> Save Changes
+                                </button>
+                                <a href="{% url 'accounts:profile' %}" class="btn btn-outline-secondary">
+                                    Cancel
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+document.getElementById('profileImageInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.getElementById('profilePreview');
+            if (preview.tagName === 'IMG') {
+                preview.src = e.target.result;
+            } else {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.className = 'rounded-circle mb-3';
+                img.style.cssText = 'width: 120px; height: 120px; object-fit: cover;';
+                img.id = 'profilePreview';
+                preview.parentNode.replaceChild(img, preview);
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+});
+</script>
+{% endblock %}

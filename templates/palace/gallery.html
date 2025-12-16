@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Royal Gallery{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <h1>Royal Gallery</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'palace:home' %}">Home</a></li>
+                <li class="breadcrumb-item active">Gallery</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<section class="py-5">
+    <div class="container">
+        <!-- Filter Section -->
+        <div class="card mb-4" data-aos="fade-up">
+            <div class="card-body">
+                <form method="get" class="row g-3 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label">Category</label>
+                        <select name="category" class="form-select">
+                            <option value="">All Categories</option>
+                            {% for category in categories %}
+                            <option value="{{ category.slug }}" {% if current_category == category.slug %}selected{% endif %}>
+                                {{ category.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Occasion Type</label>
+                        <select name="occasion" class="form-select">
+                            <option value="">All Types</option>
+                            {% for value, label in occasion_types %}
+                            <option value="{{ value }}" {% if current_occasion == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Search</label>
+                        <input type="text" name="search" class="form-control" placeholder="Search images..." 
+                               value="{{ request.GET.search }}">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-search me-1"></i> Filter
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Category Pills -->
+        {% if categories %}
+        <div class="mb-4 text-center" data-aos="fade-up">
+            <a href="{% url 'palace:gallery' %}" class="btn btn-sm {% if not current_category %}btn-primary{% else %}btn-outline-primary{% endif %} mb-2">
+                All
+            </a>
+            {% for category in categories %}
+            <a href="?category={{ category.slug }}" class="btn btn-sm {% if current_category == category.slug %}btn-primary{% else %}btn-outline-primary{% endif %} mb-2">
+                {% if category.icon %}<i class="bi {{ category.icon }} me-1"></i>{% endif %}
+                {{ category.name }}
+            </a>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <!-- Gallery Grid -->
+        {% if images %}
+        <div class="gallery-grid">
+            {% for image in images %}
+            <div class="gallery-item" data-aos="zoom-in" data-aos-delay="{{ forloop.counter0|divisibleby:4 }}0"
+                 data-lightbox="{{ image.image.url }}" data-title="{{ image.title }}">
+                <img src="{{ image.image.url }}" alt="{{ image.title }}">
+                <div class="gallery-overlay">
+                    <h6 class="gallery-title">{{ image.title }}</h6>
+                    <p class="gallery-caption">
+                        {{ image.get_occasion_type_display }}
+                        {% if image.date_taken %}• {{ image.date_taken|date:"M Y" }}{% endif %}
+                    </p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <nav class="mt-5" aria-label="Gallery pagination">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_occasion %}&occasion={{ current_occasion }}{% endif %}">
+                        <i class="bi bi-chevron-left"></i> Previous
+                    </a>
+                </li>
+                {% endif %}
+                
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_occasion %}&occasion={{ current_occasion }}{% endif %}">{{ num }}</a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_occasion %}&occasion={{ current_occasion }}{% endif %}">
+                        Next <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+        
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-images text-muted" style="font-size: 4rem;"></i>
+            <h4 class="mt-3">No images found</h4>
+            <p class="text-muted">Try adjusting your filters or check back later for new uploads.</p>
+            <a href="{% url 'palace:gallery' %}" class="btn btn-outline-primary">Clear Filters</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ event.title }}{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <h1>Event Details</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'palace:home' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'events:list' %}">Events</a></li>
+                <li class="breadcrumb-item active">{{ event.title|truncatewords:5 }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Event Header -->
+                <div class="mb-4" data-aos="fade-up">
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        <span class="badge bg-primary">{{ event.get_event_type_display }}</span>
+                        {% if event.category %}
+                        <span class="badge bg-secondary">{{ event.category.name }}</span>
+                        {% endif %}
+                        {% if event.is_cancelled %}
+                        <span class="badge bg-danger">Cancelled</span>
+                        {% elif event.is_ongoing %}
+                        <span class="badge bg-success">Happening Now</span>
+                        {% elif event.is_past %}
+                        <span class="badge bg-secondary">Past Event</span>
+                        {% endif %}
+                    </div>
+                    <h1 class="display-5 fw-bold">{{ event.title }}</h1>
+                </div>
+                
+                <!-- Featured Image -->
+                {% if event.featured_image %}
+                <div class="mb-4" data-aos="fade-up">
+                    <img src="{{ event.featured_image.url }}" class="img-fluid rounded shadow" alt="{{ event.title }}">
+                </div>
+                {% endif %}
+                
+                <!-- Countdown Timer -->
+                {% if event.is_upcoming and not event.is_cancelled %}
+                <div class="mb-4" data-aos="fade-up">
+                    <h5 class="text-center mb-3">Event Starts In</h5>
+                    <div data-countdown="{{ event.start_date|date:'c' }}"></div>
+                </div>
+                {% endif %}
+                
+                <!-- Event Details Card -->
+                <div class="card mb-4" data-aos="fade-up">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-6 mb-3">
+                                <h6 class="text-muted mb-1"><i class="bi bi-calendar3 me-2"></i> Date</h6>
+                                <p class="mb-0 fw-bold">{{ event.start_date|date:"l, F d, Y" }}</p>
+                            </div>
+                            <div class="col-sm-6 mb-3">
+                                <h6 class="text-muted mb-1"><i class="bi bi-clock me-2"></i> Time</h6>
+                                <p class="mb-0 fw-bold">
+                                    {% if event.is_all_day %}
+                                    All Day
+                                    {% else %}
+                                    {{ event.start_date|date:"g:i A" }}
+                                    {% if event.end_date %} - {{ event.end_date|date:"g:i A" }}{% endif %}
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <div class="col-sm-6 mb-3">
+                                <h6 class="text-muted mb-1"><i class="bi bi-geo-alt me-2"></i> Venue</h6>
+                                <p class="mb-0 fw-bold">{{ event.venue }}</p>
+                            </div>
+                            {% if event.dress_code %}
+                            <div class="col-sm-6 mb-3">
+                                <h6 class="text-muted mb-1"><i class="bi bi-person-badge me-2"></i> Dress Code</h6>
+                                <p class="mb-0 fw-bold">{{ event.dress_code }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        {% if event.address %}
+                        <div class="mt-3 pt-3 border-top">
+                            <h6 class="text-muted mb-1"><i class="bi bi-map me-2"></i> Address</h6>
+                            <p class="mb-0">{{ event.address }}</p>
+                            {% if event.map_url %}
+                            <a href="{{ event.map_url }}" class="btn btn-outline-primary btn-sm mt-2" target="_blank">
+                                <i class="bi bi-pin-map me-1"></i> View on Map
+                            </a>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Description -->
+                <div class="mb-4" data-aos="fade-up">
+                    <h4 class="border-bottom pb-2 mb-3">About This Event</h4>
+                    <div>{{ event.description|linebreaks }}</div>
+                </div>
+                
+                <!-- Special Instructions -->
+                {% if event.special_instructions %}
+                <div class="card bg-light mb-4" data-aos="fade-up">
+                    <div class="card-body">
+                        <h5><i class="bi bi-info-circle me-2 text-primary"></i> Special Instructions</h5>
+                        <p class="mb-0">{{ event.special_instructions|linebreaks }}</p>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Contact Info -->
+                {% if event.contact_info %}
+                <div class="mb-4" data-aos="fade-up">
+                    <h5><i class="bi bi-telephone me-2"></i> Contact Information</h5>
+                    <p>{{ event.contact_info|linebreaks }}</p>
+                </div>
+                {% endif %}
+                
+                <!-- Share -->
+                <div class="mt-5 pt-4 border-top" data-aos="fade-up">
+                    <h6 class="mb-3">Share this event:</h6>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm" data-share="{{ request.build_absolute_uri }}" data-title="{{ event.title }}">
+                            <i class="bi bi-share me-1"></i> Share
+                        </button>
+                        <a href="https://wa.me/?text={{ event.title|urlencode }}%20{{ request.build_absolute_uri|urlencode }}" 
+                           class="btn btn-outline-success btn-sm" target="_blank">
+                            <i class="bi bi-whatsapp"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Related Events -->
+                {% if related_events %}
+                <div class="card mb-4" data-aos="fade-left">
+                    <div class="card-header bg-primary text-white">
+                        <i class="bi bi-calendar-event me-2"></i> Related Events
+                    </div>
+                    <div class="card-body">
+                        {% for related in related_events %}
+                        <div class="d-flex mb-3 {% if not forloop.last %}pb-3 border-bottom{% endif %}">
+                            <div class="event-date-badge me-3" style="position: relative; top: 0; left: 0; padding: 0.25rem 0.5rem;">
+                                <span class="day" style="font-size: 1rem;">{{ related.start_date|date:"d" }}</span>
+                                <span class="month" style="font-size: 0.6rem;">{{ related.start_date|date:"M" }}</span>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">
+                                    <a href="{{ related.get_absolute_url }}" class="text-dark">
+                                        {{ related.title|truncatewords:6 }}
+                                    </a>
+                                </h6>
+                                <small class="text-muted">{{ related.venue }}</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Quick Links -->
+                <div class="card" data-aos="fade-left" data-aos-delay="100">
+                    <div class="card-header bg-secondary text-white">
+                        <i class="bi bi-link-45deg me-2"></i> Quick Links
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <a href="{% url 'events:list' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-calendar-event me-2"></i> All Events
+                        </a>
+                        <a href="{% url 'events:calendar' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-calendar3 me-2"></i> Event Calendar
+                        </a>
+                        <a href="{% url 'events:festivals' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-music-note me-2"></i> Traditional Festivals
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

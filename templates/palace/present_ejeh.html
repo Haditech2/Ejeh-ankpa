@@ -1,0 +1,509 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}HRH {{ ejeh.full_name }} - {{ ejeh.royal_title|default:"The Present Ejeh of Ankpa" }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .ejeh-hero {
+        background: linear-gradient(135deg, var(--royal-brown) 0%, #4a2c2a 100%);
+        padding: 80px 0;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .ejeh-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("{% static 'images/pattern.png' %}") repeat;
+        opacity: 0.1;
+    }
+    
+    .ejeh-portrait {
+        border: 8px solid var(--royal-gold);
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        max-width: 350px;
+        transition: transform 0.3s ease;
+    }
+    
+    .ejeh-portrait:hover {
+        transform: scale(1.02);
+    }
+    
+    .royal-badge {
+        background: var(--royal-gold);
+        color: var(--royal-brown);
+        padding: 8px 25px;
+        border-radius: 50px;
+        font-weight: bold;
+        display: inline-block;
+        margin-bottom: 15px;
+    }
+    
+    .royal-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.8rem;
+        font-weight: 700;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .reign-info {
+        background: rgba(255,255,255,0.1);
+        padding: 15px 25px;
+        border-radius: 10px;
+        border-left: 4px solid var(--royal-gold);
+        margin-top: 20px;
+    }
+    
+    .bio-section {
+        padding: 60px 0;
+    }
+    
+    .bio-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        padding: 40px;
+        margin-bottom: 30px;
+    }
+    
+    .bio-card h3 {
+        color: var(--royal-brown);
+        font-family: 'Playfair Display', serif;
+        border-bottom: 3px solid var(--royal-gold);
+        padding-bottom: 15px;
+        margin-bottom: 25px;
+    }
+    
+    .bio-card h3 i {
+        color: var(--royal-gold);
+    }
+    
+    .timeline-item {
+        position: relative;
+        padding-left: 30px;
+        margin-bottom: 25px;
+    }
+    
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 8px;
+        width: 12px;
+        height: 12px;
+        background: var(--royal-gold);
+        border-radius: 50%;
+    }
+    
+    .timeline-item::after {
+        content: '';
+        position: absolute;
+        left: 5px;
+        top: 20px;
+        width: 2px;
+        height: calc(100% + 5px);
+        background: #e9ecef;
+    }
+    
+    .timeline-item:last-child::after {
+        display: none;
+    }
+    
+    .timeline-year {
+        font-weight: bold;
+        color: var(--royal-brown);
+    }
+    
+    .quote-card {
+        background: linear-gradient(135deg, var(--royal-brown), #4a2c2a);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        text-align: center;
+        position: relative;
+    }
+    
+    .quote-card::before {
+        content: '"';
+        font-size: 120px;
+        font-family: Georgia, serif;
+        position: absolute;
+        top: -20px;
+        left: 20px;
+        color: var(--royal-gold);
+        opacity: 0.3;
+    }
+    
+    .quote-text {
+        font-size: 1.5rem;
+        font-style: italic;
+        font-family: 'Playfair Display', serif;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .achievement-badge {
+        background: #f8f4e8;
+        border-left: 4px solid var(--royal-gold);
+        padding: 15px 20px;
+        margin-bottom: 15px;
+        border-radius: 0 10px 10px 0;
+    }
+    
+    .stat-card {
+        text-align: center;
+        padding: 25px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        transition: transform 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: var(--royal-brown);
+        font-family: 'Playfair Display', serif;
+    }
+    
+    .stat-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin-top: 5px;
+    }
+    
+    .hail-section {
+        background: var(--royal-gold);
+        padding: 40px;
+        text-align: center;
+    }
+    
+    .hail-text {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        color: var(--royal-brown);
+        font-weight: bold;
+        margin: 0;
+    }
+    
+    .award-card {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        height: 100%;
+    }
+    
+    .award-card i {
+        font-size: 2rem;
+        color: var(--royal-gold);
+        margin-bottom: 15px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="ejeh-hero">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-5 text-center mb-4 mb-lg-0" data-aos="fade-right">
+                <div class="ejeh-portrait-container">
+                    {% if ejeh.official_portrait %}
+                    <img src="{{ ejeh.official_portrait.url }}" alt="{{ ejeh.full_name }}" class="img-fluid ejeh-portrait">
+                    {% else %}
+                    <div class="ejeh-portrait d-flex align-items-center justify-content-center bg-secondary" 
+                         style="height: 400px; width: 350px; margin: 0 auto;">
+                        <i class="bi bi-person-fill text-white" style="font-size: 8rem;"></i>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-7" data-aos="fade-left">
+                <div class="royal-badge">
+                    <i class="bi bi-crown-fill me-2"></i> The Present Ejeh of Ankpa
+                </div>
+                <h1 class="royal-title mb-3">{{ ejeh.title }} {{ ejeh.full_name }}</h1>
+                <h2 class="h4 text-warning mb-4">{{ ejeh.royal_title|default:"Ejeh Ankpa" }}</h2>
+                
+                <p class="lead mb-4" style="opacity: 0.95;">
+                    A distinguished monarch descending from a lineage marked with a combination of royal blood 
+                    and humanitarian service - from the great Atiyele Omá Idoko dynasty of Igala Kingdom.
+                </p>
+                
+                <div class="reign-info">
+                    <div class="row">
+                        <div class="col-6">
+                            <small class="d-block text-warning">Date of Birth</small>
+                            <strong>{{ ejeh.birth_date|date:"F d, Y"|default:"Not available" }}</strong>
+                        </div>
+                        <div class="col-6">
+                            <small class="d-block text-warning">Coronation Date</small>
+                            <strong>{{ ejeh.reign_start|date:"F d, Y"|default:"Not available" }}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-6 col-md-3" data-aos="fade-up">
+                <div class="stat-card">
+                    <div class="stat-number">{{ ejeh.reign_number|default:"4" }}{% if ejeh.reign_number == 1 %}st{% elif ejeh.reign_number == 2 %}nd{% elif ejeh.reign_number == 3 %}rd{% else %}th{% endif %}</div>
+                    <div class="stat-label">Ejeh of Ankpa</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="100">
+                <div class="stat-card">
+                    <div class="stat-number">12+</div>
+                    <div class="stat-label">Countries Visited</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="200">
+                <div class="stat-card">
+                    <div class="stat-number">20+</div>
+                    <div class="stat-label">Years in Business</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="300">
+                <div class="stat-card">
+                    <div class="stat-number">{{ ejeh.reign_start.year|default:"2021" }}</div>
+                    <div class="stat-label">Year of Coronation</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Biography Section -->
+<section class="bio-section">
+    <div class="container">
+        <!-- Royal Lineage -->
+        <div class="bio-card" data-aos="fade-up">
+            <h3><i class="bi bi-tree me-2"></i> Royal Lineage</h3>
+            {% if ejeh.biography %}
+            <div class="lead">{{ ejeh.biography|linebreaks }}</div>
+            {% else %}
+            <p class="lead">
+                The Ejeh Ankpa IV, His Royal Highness, Alhaji Abubakar Ahmed Yakubu was born into the family of 
+                Late Ejeh Ahmadu Yakubu on the 9th day of April, 1978 in Kano State, North-west Nigeria.
+            </p>
+            <p>
+                Alhaji Abubakar descends from a lineage marked with combination of royal blood and humanitarian service. 
+                Kings and philanthropists are found among his forebears as his father, the <strong>Late Ejeh Ahmadu Yakubu</strong> 
+                hails from the great <strong>Atiyele Omá Idoko dynasty</strong> of Igala Kingdom while his mother, 
+                <strong>Late Hajiya Rabi Yakubu (Nee Usman)</strong> hails from the family of Late Alhaji Usman Abubakar, 
+                a renowned fish farmer cum philanthropist of Angwa origin in Idah Local Government Area of Kogi State.
+            </p>
+            {% endif %}
+        </div>
+        
+        <!-- Education Journey -->
+        {% if ejeh.early_life or ejeh.education %}
+        <div class="bio-card" data-aos="fade-up">
+            <h3><i class="bi bi-mortarboard me-2"></i> Education & Early Life</h3>
+            
+            {% if ejeh.early_life %}
+            <div class="mb-4">{{ ejeh.early_life|linebreaks }}</div>
+            {% endif %}
+            
+            <div class="timeline-item">
+                <div class="timeline-year">1983 - 1988</div>
+                <p>Primary Education at <strong>Magwan Special Primary School</strong>, Kano</p>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-year">1989 - 1994</div>
+                <p>Secondary Education at the prestigious <strong>Government Secondary School, Kawaji</strong>, Kano State</p>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-year">1994 - 1999</div>
+                <p>Served as <strong>Personal Assistant</strong> to his father, the Late Ejeh Ahmadu Yakubu. 
+                In charge of protocols, managing traditional engagements, planning visits and interfacing with high level stakeholders.</p>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-year">1999 - 2004</div>
+                <p><strong>B.Sc. Business Administration</strong> at Enugu State University of Science and Technology, Enugu</p>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-year">2006 - 2007</div>
+                <p>Postgraduate studies in <strong>Management Information System (MIS)</strong> at Meridian College Greenwich, London</p>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Career -->
+        {% if ejeh.occupation_before_throne or ejeh.achievements %}
+        <div class="bio-card" data-aos="fade-up">
+            <h3><i class="bi bi-briefcase me-2"></i> Professional Career</h3>
+            
+            <div class="achievement-badge">
+                <strong>2008 - 2010: Abercrombie & Fitch UK Limited, London</strong>
+                <p class="mb-0 mt-2">Pioneer sales representative. Part of the team that developed live model in-store mannequins, 
+                attracting more customers and boosting sales, leading to opening more Abercrombie flagship stores across Europe.</p>
+            </div>
+            
+            <div class="achievement-badge">
+                <strong>2010 - 2012: ZUMA Energy Nigeria Limited</strong>
+                <p class="mb-0 mt-2">Business Development Manager responsible for action and business plans for licenses, permits and 
+                liaising with Power sector Stakeholders. Oversaw three coal mining sites in Kogi State, two 1200MW Coal fired power 
+                plant in Itobe, and a 400MW Gas fired power plant in Egbema, Imo State.</p>
+            </div>
+            
+            <div class="achievement-badge">
+                <strong>2012 - 2016: ZIMCO Nigeria Limited</strong>
+                <p class="mb-0 mt-2">Project Coordinator engaging foreign investors from Russia, China, Korea and India for rail 
+                projects on B.O.T basis with Nigeria Railway Corporation (NRC). Facilitated Federal Government's approval of the 
+                Company's railway development project.</p>
+            </div>
+            
+            <div class="achievement-badge">
+                <strong>Present: Entrepreneur & Business Leader</strong>
+                <p class="mb-0 mt-2">
+                    • Managing Director, <strong>Ashkar Integrated Services Limited</strong><br>
+                    • Executive Director of Business Development, <strong>Softcom</strong><br>
+                    • Board Director, <strong>Maidpro Nigeria Limited</strong><br>
+                    • Board Director, <strong>Acceloron Technologies Limited</strong>
+                </p>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Quote -->
+        {% if ejeh.motto %}
+        <div class="quote-card mb-4" data-aos="zoom-in">
+            <p class="quote-text">
+                "{{ ejeh.motto }}"
+            </p>
+            <p class="mb-0 mt-3 text-warning">— His Royal Highness, on accepting the throne</p>
+        </div>
+        {% endif %}
+        
+        <!-- Philosophy & Philanthropy -->
+        {% if ejeh.legacy %}
+        <div class="bio-card" data-aos="fade-up">
+            <h3><i class="bi bi-heart me-2"></i> Philosophy & Legacy</h3>
+            <div>{{ ejeh.legacy|linebreaks }}</div>
+        </div>
+        {% endif %}
+        
+        <!-- Awards -->
+        <div class="bio-card" data-aos="fade-up">
+            <h3><i class="bi bi-award me-2"></i> Awards & Recognition</h3>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="award-card">
+                        <i class="bi bi-trophy-fill"></i>
+                        <h6>Award of Stewardship</h6>
+                        <p class="text-muted mb-0 small">Coalition of Progressive Political Parties, Kogi State</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="award-card">
+                        <i class="bi bi-building"></i>
+                        <h6>Board Membership Certificate</h6>
+                        <p class="text-muted mb-0 small">Kogi Chamber of Commerce, Industry, Mines and Agriculture</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="award-card">
+                        <i class="bi bi-heart-fill"></i>
+                        <h6>Humanitarian Award</h6>
+                        <p class="text-muted mb-0 small">Omataina Empire</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="award-card">
+                        <i class="bi bi-star-fill"></i>
+                        <h6>Plaque of Honour</h6>
+                        <p class="text-muted mb-0 small">Author of "The Buhari in Us"</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Personal -->
+        <div class="bio-card" data-aos="fade-up">
+            <h3><i class="bi bi-person-heart me-2"></i> Personal Life</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong><i class="bi bi-globe me-2 text-primary"></i> Countries Visited:</strong></p>
+                    <p>{{ ejeh.countries_visited|default:"UK, Germany, Kenya, Russia, India, Qatar, USA, Saudi Arabia, Ethiopia, Australia, Spain, Turkey and more." }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong><i class="bi bi-heart me-2 text-primary"></i> Hobbies:</strong></p>
+                    <p>{{ ejeh.hobbies|default:"Charity works, reading and intelligent interactions." }}</p>
+                </div>
+            </div>
+            <p class="mb-0">
+                Alhaji Abubakar is a practicing Muslim, and he is happily married with children.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Hail Section -->
+<section class="hail-section" data-aos="fade-up">
+    <div class="container">
+        <p class="hail-text">
+            All hail His Royal Highness... <span style="font-size: 2.5rem;">Agaaaaaaaagwu!!!</span>
+        </p>
+    </div>
+</section>
+        
+<!-- Gallery Section -->
+{% if gallery_images %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="section-header" data-aos="fade-up">
+            <h2 class="section-title">Royal Gallery</h2>
+            <p class="section-subtitle">Glimpses of His Royal Highness</p>
+        </div>
+        
+        <div class="gallery-grid">
+            {% for image in gallery_images %}
+            <div class="gallery-item" data-aos="zoom-in" data-aos-delay="{{ forloop.counter0 }}50"
+                 data-lightbox="{{ image.image.url }}" data-title="{{ image.title }}">
+                <img src="{{ image.image.url }}" alt="{{ image.title }}">
+                <div class="gallery-overlay">
+                    <h6 class="gallery-title">{{ image.title }}</h6>
+                    <p class="gallery-caption">{{ image.get_occasion_type_display }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{% url 'palace:gallery' %}" class="btn btn-primary btn-lg">
+                <i class="bi bi-images me-2"></i> View Full Gallery
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Navigation -->
+<section class="py-4">
+    <div class="container text-center">
+        <a href="{% url 'palace:past_ejehs' %}" class="btn btn-outline-primary btn-lg">
+            <i class="bi bi-clock-history me-2"></i> View Past Ejehs
+        </a>
+    </div>
+</section>
+{% endblock %}

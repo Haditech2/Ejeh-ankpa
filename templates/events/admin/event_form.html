@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% if form.instance.pk %}Edit{% else %}Create{% endif %} Event{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <h1>{% if form.instance.pk %}Edit{% else %}Create{% endif %} Event</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'palace:home' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'accounts:admin_dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item active">{% if form.instance.pk %}Edit{% else %}New{% endif %} Event</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <i class="bi bi-calendar-event me-2"></i>
+                        {% if form.instance.pk %}Edit Event{% else %}New Event{% endif %}
+                    </div>
+                    <div class="card-body p-4">
+                        <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                            {% csrf_token %}
+                            
+                            <div class="row">
+                                <div class="col-md-8 mb-3">
+                                    <label for="title" class="form-label">Event Title <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control {% if form.title.errors %}is-invalid{% endif %}" 
+                                           id="title" name="title" value="{{ form.title.value|default:'' }}" required>
+                                    {% if form.title.errors %}
+                                    <div class="invalid-feedback">{{ form.title.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="event_type" class="form-label">Event Type <span class="text-danger">*</span></label>
+                                    <select class="form-select {% if form.event_type.errors %}is-invalid{% endif %}" 
+                                            id="event_type" name="event_type" required>
+                                        {% for value, label in form.fields.event_type.choices %}
+                                        <option value="{{ value }}" {% if form.event_type.value == value %}selected{% endif %}>
+                                            {{ label }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                    {% if form.event_type.errors %}
+                                    <div class="invalid-feedback">{{ form.event_type.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="start_date" class="form-label">Start Date & Time <span class="text-danger">*</span></label>
+                                    <input type="datetime-local" class="form-control {% if form.start_date.errors %}is-invalid{% endif %}" 
+                                           id="start_date" name="start_date" 
+                                           value="{{ form.start_date.value|date:'Y-m-d\TH:i' }}" required>
+                                    {% if form.start_date.errors %}
+                                    <div class="invalid-feedback">{{ form.start_date.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="end_date" class="form-label">End Date & Time</label>
+                                    <input type="datetime-local" class="form-control" 
+                                           id="end_date" name="end_date" 
+                                           value="{{ form.end_date.value|date:'Y-m-d\TH:i' }}">
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="venue" class="form-label">Venue <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control {% if form.venue.errors %}is-invalid{% endif %}" 
+                                           id="venue" name="venue" value="{{ form.venue.value|default:'' }}" required>
+                                    {% if form.venue.errors %}
+                                    <div class="invalid-feedback">{{ form.venue.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="category" class="form-label">Category</label>
+                                    <select class="form-select" id="category" name="category">
+                                        <option value="">Select category (optional)</option>
+                                        {% for category in categories %}
+                                        <option value="{{ category.id }}" {% if form.category.value == category.id %}selected{% endif %}>
+                                            {{ category.name }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Full Address</label>
+                                <textarea class="form-control" id="address" name="address" rows="2">{{ form.address.value|default:'' }}</textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
+                                <textarea class="form-control {% if form.description.errors %}is-invalid{% endif %}" 
+                                          id="description" name="description" rows="5" required>{{ form.description.value|default:'' }}</textarea>
+                                {% if form.description.errors %}
+                                <div class="invalid-feedback">{{ form.description.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="dress_code" class="form-label">Dress Code</label>
+                                    <input type="text" class="form-control" id="dress_code" 
+                                           name="dress_code" value="{{ form.dress_code.value|default:'' }}"
+                                           placeholder="e.g., Traditional attire">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="featured_image" class="form-label">Featured Image</label>
+                                    <input type="file" class="form-control" id="featured_image" 
+                                           name="featured_image" accept="image/*">
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="special_instructions" class="form-label">Special Instructions</label>
+                                <textarea class="form-control" id="special_instructions" 
+                                          name="special_instructions" rows="3"
+                                          placeholder="Any special instructions for attendees">{{ form.special_instructions.value|default:'' }}</textarea>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="contact_info" class="form-label">Contact Information</label>
+                                    <textarea class="form-control" id="contact_info" name="contact_info" rows="2">{{ form.contact_info.value|default:'' }}</textarea>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="map_url" class="form-label">Map URL</label>
+                                    <input type="url" class="form-control" id="map_url" 
+                                           name="map_url" value="{{ form.map_url.value|default:'' }}"
+                                           placeholder="Google Maps link">
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="is_all_day" 
+                                               name="is_all_day" {% if form.is_all_day.value %}checked{% endif %}>
+                                        <label class="form-check-label" for="is_all_day">All day event</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="is_featured" 
+                                               name="is_featured" {% if form.is_featured.value %}checked{% endif %}>
+                                        <label class="form-check-label" for="is_featured">Featured event</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="is_published" 
+                                               name="is_published" {% if form.is_published.value %}checked{% endif %}>
+                                        <label class="form-check-label" for="is_published">Published</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="is_cancelled" 
+                                               name="is_cancelled" {% if form.is_cancelled.value %}checked{% endif %}>
+                                        <label class="form-check-label" for="is_cancelled">Cancelled</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex gap-3">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-lg me-2"></i> 
+                                    {% if form.instance.pk %}Update{% else %}Create{% endif %} Event
+                                </button>
+                                <a href="{% url 'events:admin_manage' %}" class="btn btn-outline-secondary">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

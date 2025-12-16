@@ -1,0 +1,252 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <h1>About Ejeh's Palace</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'palace:home' %}">Home</a></li>
+                <li class="breadcrumb-item active">About</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<!-- About Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row align-items-center mb-5">
+            <div class="col-lg-6 mb-4 mb-lg-0" data-aos="fade-right">
+                {% if palace_info.about_image %}
+                <img src="{{ palace_info.about_image.url }}" class="img-fluid rounded shadow" alt="Ejeh's Palace">
+                {% else %}
+                <div class="bg-primary d-flex align-items-center justify-content-center rounded shadow" style="height: 400px;">
+                    <i class="bi bi-building text-white" style="font-size: 5rem;"></i>
+                </div>
+                {% endif %}
+            </div>
+            <div class="col-lg-6" data-aos="fade-left">
+                <h2 class="display-5 fw-bold mb-4">The Seat of Ankpa Kingdom</h2>
+                {% if palace_info.about_text %}
+                <div class="lead">{{ palace_info.about_text|linebreaks }}</div>
+                {% else %}
+                <p class="lead">
+                    The Ejeh Ankpa Palace stands as the traditional seat of power and cultural heritage 
+                    for the Igala people of Ankpa in Kogi State, Nigeria. For generations, this institution 
+                    has preserved the customs, traditions, and identity of our people.
+                </p>
+                <p>
+                    The Ejeh of Ankpa serves as the paramount traditional ruler, custodian of culture, 
+                    and father to all citizens. The palace remains a symbol of unity, peace, and 
+                    continuity of our cherished traditions.
+                </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Mission & Vision -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 mb-4" data-aos="fade-up">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <div class="text-primary mb-3">
+                            <i class="bi bi-bullseye" style="font-size: 2.5rem;"></i>
+                        </div>
+                        <h4 class="card-title">Our Mission</h4>
+                        <p class="card-text text-muted">
+                            {% if palace_info.mission %}
+                            {{ palace_info.mission }}
+                            {% else %}
+                            To preserve and promote the rich cultural heritage of Ankpa Kingdom, 
+                            foster unity among our people, and provide traditional leadership 
+                            that guides our community towards peace and prosperity.
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <div class="text-primary mb-3">
+                            <i class="bi bi-eye" style="font-size: 2.5rem;"></i>
+                        </div>
+                        <h4 class="card-title">Our Vision</h4>
+                        <p class="card-text text-muted">
+                            {% if palace_info.vision %}
+                            {{ palace_info.vision }}
+                            {% else %}
+                            To be a beacon of cultural preservation and traditional governance, 
+                            bridging the past with the future while maintaining the dignity 
+                            and respect of our ancestral heritage.
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- History Timeline -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="display-5 fw-bold">Our Heritage</h2>
+            <p class="lead text-muted">A brief journey through time</p>
+        </div>
+        
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="timeline">
+                    <div class="timeline-item" data-aos="fade-up">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="text-primary">Ancient Origins</h5>
+                                <p class="mb-0 text-muted">
+                                    The Ankpa Kingdom traces its roots to ancient times, established 
+                                    as part of the greater Igala cultural sphere.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="timeline-item" data-aos="fade-up" data-aos-delay="100">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="text-primary">Colonial Era</h5>
+                                <p class="mb-0 text-muted">
+                                    Through the colonial period, the institution of the Ejeh maintained 
+                                    its cultural significance and traditional authority.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="timeline-item" data-aos="fade-up" data-aos-delay="200">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="text-primary">Modern Era</h5>
+                                <p class="mb-0 text-muted">
+                                    Today, the Ejeh continues to serve as the custodian of culture 
+                                    and symbol of unity for all Ankpa people.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-5" data-aos="fade-up">
+            <a href="{% url 'palace:history_list' %}" class="btn btn-primary btn-lg">
+                <i class="bi bi-book me-2"></i> Explore Full History
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Values Section -->
+<section class="py-5 bg-primary text-white">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="display-5 fw-bold">Our Core Values</h2>
+        </div>
+        
+        <div class="row text-center">
+            <div class="col-md-3 mb-4" data-aos="fade-up">
+                <div class="mb-3">
+                    <i class="bi bi-shield-check" style="font-size: 3rem;"></i>
+                </div>
+                <h5>Integrity</h5>
+                <p class="small opacity-75">Upholding truth and honor in all dealings</p>
+            </div>
+            <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="mb-3">
+                    <i class="bi bi-people" style="font-size: 3rem;"></i>
+                </div>
+                <h5>Unity</h5>
+                <p class="small opacity-75">Bringing our community together as one</p>
+            </div>
+            <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="mb-3">
+                    <i class="bi bi-book" style="font-size: 3rem;"></i>
+                </div>
+                <h5>Heritage</h5>
+                <p class="small opacity-75">Preserving our traditions for generations</p>
+            </div>
+            <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="mb-3">
+                    <i class="bi bi-heart" style="font-size: 3rem;"></i>
+                </div>
+                <h5>Service</h5>
+                <p class="small opacity-75">Serving our people with dedication</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center" data-aos="fade-up">
+                <h3 class="mb-4">Want to Learn More?</h3>
+                <p class="text-muted mb-4">
+                    Explore our gallery, learn about our past and present Ejehs, 
+                    or get in touch with us for more information.
+                </p>
+                <div class="d-flex flex-wrap justify-content-center gap-3">
+                    <a href="{% url 'palace:present_ejeh' %}" class="btn btn-primary">
+                        <i class="bi bi-person me-2"></i> Meet the Ejeh
+                    </a>
+                    <a href="{% url 'palace:gallery' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-images me-2"></i> View Gallery
+                    </a>
+                    <a href="{% url 'community:contact' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-envelope me-2"></i> Contact Us
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--bs-primary);
+}
+.timeline-item {
+    position: relative;
+    margin-bottom: 30px;
+}
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -34px;
+    top: 20px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--bs-primary);
+    border: 2px solid white;
+}
+</style>
+{% endblock %}

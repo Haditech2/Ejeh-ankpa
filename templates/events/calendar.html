@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Event Calendar{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <h1>Event Calendar</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'palace:home' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'events:list' %}">Events</a></li>
+                <li class="breadcrumb-item active">Calendar</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<section class="py-5">
+    <div class="container">
+        <!-- Legend -->
+        <div class="mb-4 text-center" data-aos="fade-up">
+            <span class="badge bg-primary me-2"><i class="bi bi-circle-fill me-1"></i> Ceremony</span>
+            <span class="badge bg-success me-2"><i class="bi bi-circle-fill me-1"></i> Festival</span>
+            <span class="badge bg-info me-2"><i class="bi bi-circle-fill me-1"></i> Meeting</span>
+            <span class="badge bg-warning me-2"><i class="bi bi-circle-fill me-1"></i> Celebration</span>
+            <span class="badge bg-secondary me-2"><i class="bi bi-circle-fill me-1"></i> Other</span>
+        </div>
+        
+        <!-- Calendar -->
+        <div class="card" data-aos="fade-up">
+            <div class="card-body">
+                <div id="calendar"></div>
+            </div>
+        </div>
+        
+        <!-- Event Modal -->
+        <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="eventModalLabel">Event Details</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <h5 id="eventTitle"></h5>
+                        <p class="text-muted" id="eventType"></p>
+                        <div class="mb-3">
+                            <strong><i class="bi bi-calendar3 me-2"></i></strong>
+                            <span id="eventDate"></span>
+                        </div>
+                        <div class="mb-3">
+                            <strong><i class="bi bi-clock me-2"></i></strong>
+                            <span id="eventTime"></span>
+                        </div>
+                        <div class="mb-3">
+                            <strong><i class="bi bi-geo-alt me-2"></i></strong>
+                            <span id="eventVenue"></span>
+                        </div>
+                        <div id="eventDescription"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <a href="#" class="btn btn-primary" id="eventLink">View Full Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,listMonth'
+        },
+        events: '{% url "events:calendar_events" %}',
+        eventClick: function(info) {
+            info.jsEvent.preventDefault();
+            
+            document.getElementById('eventTitle').textContent = info.event.title;
+            document.getElementById('eventType').textContent = info.event.extendedProps.eventType;
+            document.getElementById('eventDate').textContent = info.event.start.toLocaleDateString('en-US', {
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+            });
+            document.getElementById('eventTime').textContent = info.event.extendedProps.time || 'All Day';
+            document.getElementById('eventVenue').textContent = info.event.extendedProps.venue || 'TBD';
+            document.getElementById('eventDescription').innerHTML = info.event.extendedProps.description || '';
+            document.getElementById('eventLink').href = info.event.url;
+            
+            var modal = new bootstrap.Modal(document.getElementById('eventModal'));
+            modal.show();
+        },
+        eventDidMount: function(info) {
+            // Add tooltip
+            info.el.setAttribute('title', info.event.title);
+        },
+        themeSystem: 'bootstrap5'
+    });
+    calendar.render();
+});
+</script>
+{% endblock %}

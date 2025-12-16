@@ -1,0 +1,288 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Welcome{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6" data-aos="fade-right">
+                <div class="hero-content">
+                    <p class="hero-subtitle">The Traditional Institution of Ankpa</p>
+                    <h1 class="hero-title">Ejeh Ankpa Palace</h1>
+                    <p class="hero-text">
+                        Welcome to the official platform of the Ejeh of Ankpa - preserving our rich cultural heritage, 
+                        traditions, and serving as a bridge between our glorious past and promising future.
+                    </p>
+                    <div class="d-flex gap-3 flex-wrap">
+                        <a href="{% url 'palace:present_ejeh' %}" class="btn btn-light btn-lg">
+                            <i class="bi bi-crown me-2"></i> Meet the Ejeh
+                        </a>
+                        <a href="{% url 'palace:gallery' %}" class="btn btn-outline-light btn-lg">
+                            <i class="bi bi-images me-2"></i> Royal Gallery
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6" data-aos="fade-left">
+                {% if present_ejeh and present_ejeh.official_portrait %}
+                <div class="text-center">
+                    <img src="{{ present_ejeh.official_portrait.url }}" alt="{{ present_ejeh.full_name }}" 
+                         class="img-fluid rounded-circle ejeh-portrait shadow-lg" style="max-width: 350px;">
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Present Ejeh Section -->
+{% if present_ejeh %}
+<section class="py-5 bg-light-cream">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-5 mb-4 mb-lg-0" data-aos="fade-right">
+                {% if present_ejeh.official_portrait %}
+                <img src="{{ present_ejeh.official_portrait.url }}" alt="{{ present_ejeh.full_name }}" 
+                     class="img-fluid rounded shadow-lg">
+                {% else %}
+                <div class="bg-secondary rounded d-flex align-items-center justify-content-center" style="height: 400px;">
+                    <i class="bi bi-person-fill text-white" style="font-size: 8rem;"></i>
+                </div>
+                {% endif %}
+            </div>
+            <div class="col-lg-7" data-aos="fade-left">
+                <p class="text-royal fw-bold mb-2">
+                    <i class="bi bi-crown-fill me-2"></i> The Present Ejeh of Ankpa
+                </p>
+                <h2 class="display-5 fw-bold mb-3">{{ present_ejeh.title }} {{ present_ejeh.full_name }}</h2>
+                <p class="text-muted mb-3">
+                    <i class="bi bi-calendar3 me-2"></i> Reign: {{ present_ejeh.reign_period }}
+                </p>
+                <p class="lead">
+                    {{ present_ejeh.biography|truncatewords:60 }}
+                </p>
+                <a href="{% url 'palace:present_ejeh' %}" class="btn btn-primary btn-lg">
+                    Read Full Biography <i class="bi bi-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Announcements Section -->
+{% if recent_announcements %}
+<section class="py-5">
+    <div class="container">
+        <div class="section-header" data-aos="fade-up">
+            <h2 class="section-title">Royal Announcements</h2>
+            <p class="section-subtitle">Official communications from the palace</p>
+        </div>
+        
+        <div class="row">
+            {% for announcement in recent_announcements %}
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:1 }}00">
+                <div class="card h-100 announcement-card {{ announcement.priority }}">
+                    {% if announcement.featured_image %}
+                    <img src="{{ announcement.featured_image.url }}" class="card-img-top" alt="{{ announcement.title }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="badge bg-{{ announcement.priority_badge_class }}">
+                                {{ announcement.get_announcement_type_display }}
+                            </span>
+                            <small class="text-muted">{{ announcement.publish_date|date:"M d, Y" }}</small>
+                        </div>
+                        <h5 class="card-title">{{ announcement.title }}</h5>
+                        <p class="card-text">{{ announcement.excerpt|truncatewords:20 }}</p>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a href="{{ announcement.get_absolute_url }}" class="btn btn-outline-primary btn-sm">
+                            Read More <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{% url 'announcements:list' %}" class="btn btn-primary">
+                View All Announcements <i class="bi bi-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Gallery Preview Section -->
+{% if featured_images %}
+<section class="py-5 bg-pattern">
+    <div class="container">
+        <div class="section-header" data-aos="fade-up">
+            <h2 class="section-title">Royal Gallery</h2>
+            <p class="section-subtitle">Glimpses of palace occasions and cultural events</p>
+        </div>
+        
+        <div class="gallery-grid">
+            {% for image in featured_images %}
+            <div class="gallery-item" data-aos="zoom-in" data-aos-delay="{{ forloop.counter0 }}50"
+                 data-lightbox="{{ image.image.url }}" data-title="{{ image.title }}">
+                <img src="{{ image.image.url }}" alt="{{ image.title }}">
+                <div class="gallery-overlay">
+                    <h6 class="gallery-title">{{ image.title }}</h6>
+                    <p class="gallery-caption">{{ image.get_occasion_type_display }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-5">
+            <a href="{% url 'palace:gallery' %}" class="btn btn-primary btn-lg">
+                <i class="bi bi-images me-2"></i> Explore Full Gallery
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Upcoming Events Section -->
+{% if upcoming_events %}
+<section class="py-5">
+    <div class="container">
+        <div class="section-header" data-aos="fade-up">
+            <h2 class="section-title">Upcoming Events</h2>
+            <p class="section-subtitle">Join us in celebrating our heritage</p>
+        </div>
+        
+        <div class="row">
+            {% for event in upcoming_events %}
+            <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0 }}00">
+                <div class="card h-100 event-card">
+                    <div class="event-date-badge">
+                        <span class="day">{{ event.start_date|date:"d" }}</span>
+                        <span class="month">{{ event.start_date|date:"M" }}</span>
+                    </div>
+                    {% if event.featured_image %}
+                    <img src="{{ event.featured_image.url }}" class="card-img-top" alt="{{ event.title }}" style="height: 150px; object-fit: cover;">
+                    {% else %}
+                    <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 150px;">
+                        <i class="bi bi-calendar-event text-white" style="font-size: 3rem;"></i>
+                    </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <span class="badge bg-primary mb-2">{{ event.get_event_type_display }}</span>
+                        <h5 class="card-title">{{ event.title }}</h5>
+                        <p class="text-muted mb-0">
+                            <i class="bi bi-geo-alt me-1"></i> {{ event.venue }}
+                        </p>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a href="{{ event.get_absolute_url }}" class="btn btn-outline-primary btn-sm w-100">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{% url 'events:list' %}" class="btn btn-primary">
+                View All Events <i class="bi bi-arrow-right ms-2"></i>
+            </a>
+            <a href="{% url 'events:calendar' %}" class="btn btn-outline-primary ms-2">
+                <i class="bi bi-calendar3 me-1"></i> Calendar View
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- History & Culture Section -->
+{% if featured_articles %}
+<section class="py-5 bg-light-cream">
+    <div class="container">
+        <div class="section-header" data-aos="fade-up">
+            <h2 class="section-title">History & Culture</h2>
+            <p class="section-subtitle">Discover the rich heritage of Ankpa Kingdom</p>
+        </div>
+        
+        <div class="row">
+            {% for article in featured_articles %}
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0 }}00">
+                <div class="card h-100">
+                    {% if article.featured_image %}
+                    <img src="{{ article.featured_image.url }}" class="card-img-top" alt="{{ article.title }}">
+                    {% else %}
+                    <div class="card-img-top bg-primary d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <i class="bi bi-book text-white" style="font-size: 4rem;"></i>
+                    </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <span class="badge badge-royal mb-2">{{ article.get_article_type_display }}</span>
+                        <h5 class="card-title">{{ article.title }}</h5>
+                        <p class="card-text">{{ article.excerpt|truncatewords:20 }}</p>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a href="{{ article.get_absolute_url }}" class="btn btn-outline-primary btn-sm">
+                            Read Article <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{% url 'palace:history_list' %}" class="btn btn-primary">
+                Explore Our History <i class="bi bi-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Quick Links Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-3 col-6 mb-4" data-aos="zoom-in">
+                <a href="{% url 'palace:present_ejeh' %}" class="text-decoration-none">
+                    <div class="p-4 bg-light rounded-3 h-100">
+                        <i class="bi bi-crown-fill text-primary" style="font-size: 3rem;"></i>
+                        <h5 class="mt-3 mb-0">The Ejeh</h5>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3 col-6 mb-4" data-aos="zoom-in" data-aos-delay="100">
+                <a href="{% url 'accounts:chiefs_list' %}" class="text-decoration-none">
+                    <div class="p-4 bg-light rounded-3 h-100">
+                        <i class="bi bi-people-fill text-primary" style="font-size: 3rem;"></i>
+                        <h5 class="mt-3 mb-0">Council of Chiefs</h5>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3 col-6 mb-4" data-aos="zoom-in" data-aos-delay="200">
+                <a href="{% url 'events:festivals' %}" class="text-decoration-none">
+                    <div class="p-4 bg-light rounded-3 h-100">
+                        <i class="bi bi-music-note-beamed text-primary" style="font-size: 3rem;"></i>
+                        <h5 class="mt-3 mb-0">Festivals</h5>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3 col-6 mb-4" data-aos="zoom-in" data-aos-delay="300">
+                <a href="{% url 'community:contact' %}" class="text-decoration-none">
+                    <div class="p-4 bg-light rounded-3 h-100">
+                        <i class="bi bi-envelope-fill text-primary" style="font-size: 3rem;"></i>
+                        <h5 class="mt-3 mb-0">Contact Palace</h5>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
