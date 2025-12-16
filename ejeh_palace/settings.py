@@ -1,5 +1,6 @@
-# Force local static files storage for Vercel
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+# Use Cloudinary for static and media files
+STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 """
 Django settings for Ejeh Ankpa Palace Platform.
 Production-ready configuration for traditional institution website.
