@@ -84,13 +84,7 @@ import sys
 RUNNING_COLLECTSTATIC = 'collectstatic' in sys.argv
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
-if RUNNING_COLLECTSTATIC:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.dummy'
-        }
-    }
-elif DATABASE_URL:
+if DATABASE_URL:
     DATABASES = {
         'default': dj_database_url.config(
             default=DATABASE_URL,
