@@ -110,7 +110,7 @@ venv.bak/
 Thumbs.db
 
 # Static files (collected)
-staticfiles/
+# staticfiles/
 
 # Media files (uploaded)
 media/
