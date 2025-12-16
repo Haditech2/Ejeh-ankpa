@@ -77,7 +77,12 @@ WSGI_APPLICATION = 'ejeh_palace.wsgi.application'
 # Database
 # PostgreSQL configuration for production
 DATABASE_URL = os.environ.get('DATABASE_URL')
-if DATABASE_URL:
+
+# Check if we're running collectstatic (build phase)
+import sys
+RUNNING_COLLECTSTATIC = 'collectstatic' in sys.argv
+
+if DATABASE_URL and not RUNNING_COLLECTSTATIC:
     DATABASES = {
         'default': dj_database_url.config(
             default=DATABASE_URL,
@@ -85,12 +90,24 @@ if DATABASE_URL:
             conn_health_checks=True,
         )
     }
-elif os.environ.get('VERCEL'):
-    # Dummy database for Vercel build phase (collectstatic)
+elif DATABASE_URL:
+    # Use DATABASE_URL but don't verify connection during collectstatic
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=0,
+            conn_health_checks=False,
+        )
+    }
+elif os.environ.get('VERCEL') or RUNNING_COLLECTSTATIC:
+    # Dummy database for Vercel build phase (collectstatic) - won't actually connect
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': 'dummy',
+            'HOST': 'localhost',
+            'USER': 'dummy',
+            'PASSWORD': 'dummy',
         }
     }
 else:
