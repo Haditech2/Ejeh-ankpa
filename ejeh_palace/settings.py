@@ -17,10 +17,8 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-change-this-in
 # SECURITY: force DEBUG False for production deployments on Vercel
 DEBUG = False
 
-# Ensure Vercel domains are allowed when DEBUG is False
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,.vercel.app').split(',')
-if '.vercel.app' not in ALLOWED_HOSTS:
-    ALLOWED_HOSTS.append('.vercel.app')
+# Allowed hosts for Vercel and local testing
+ALLOWED_HOSTS = ['.vercel.app', 'localhost', '127.0.0.1']
 
 # Application definition
 INSTALLED_APPS = [
@@ -80,18 +78,46 @@ TEMPLATES = [
 WSGI_APPLICATION = 'ejeh_palace.wsgi.application'
 
 # Database
-# PostgreSQL configuration for production
 import sys
 RUNNING_COLLECTSTATIC = 'collectstatic' in sys.argv
-DATABASE_URL = os.environ.get('DATABASE_URL')
 
-if DATABASE_URL:
+# Detect common production DB environment variables. If none are present,
+# fall back to SQLite to avoid crashes on import when environment vars are
+# not provided (e.g. local or default Vercel builds).
+DATABASE_URL = os.environ.get('DATABASE_URL')
+HAS_PG_ENV = any(os.environ.get(k) for k in ('DATABASE_URL', 'PGHOST', 'POSTGRES_DB', 'POSTGRES_HOST'))
+HAS_MYSQL_ENV = any(os.environ.get(k) for k in ('MYSQL_DATABASE', 'MYSQL_HOST', 'MYSQL_DB'))
+
+if HAS_PG_ENV:
+    try:
+        # Use dj_database_url if available to parse DATABASE_URL
+        import dj_database_url
+
+        DATABASES = {
+            'default': dj_database_url.config(
+                default=DATABASE_URL,
+                conn_max_age=600,
+                conn_health_checks=True,
+            )
+        }
+    except Exception:
+        # Parsing failed or dj_database_url not present — fall back to SQLite
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': BASE_DIR / 'db.sqlite3',
+            }
+        }
+elif HAS_MYSQL_ENV:
     DATABASES = {
-        'default': dj_database_url.config(
-            default=DATABASE_URL,
-            conn_max_age=600,
-            conn_health_checks=True,
-        )
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': os.environ.get('MYSQL_DATABASE') or os.environ.get('MYSQL_DB') or 'mysql',
+            'USER': os.environ.get('MYSQL_USER', ''),
+            'PASSWORD': os.environ.get('MYSQL_PASSWORD', ''),
+            'HOST': os.environ.get('MYSQL_HOST', ''),
+            'PORT': os.environ.get('MYSQL_PORT', ''),
+        }
     }
 else:
     DATABASES = {
@@ -145,8 +171,7 @@ CLOUDINARY_STORAGE = {
 cloud_name = os.environ.get('CLOUDINARY_CLOUD_NAME') or os.environ.get('CLOUDINARY_URL')
 
 # Use WhiteNoise compressed manifest storage for static files (required for
-# correct hashed static serving on Vercel). Keep media file storage conditional
-# on whether Cloudinary credentials are provided.
+# correct hashed static serving on Vercel).
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 if cloud_name:
@@ -166,17 +191,22 @@ LOGIN_URL = 'accounts:login'
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
-# Security settings for production
+# Security settings for production. Keep these enabled, but allow the
+# HTTPS redirect to be disabled in non-production environments by default
+# so `python manage.py runserver` works locally when DEBUG=False.
 if not DEBUG:
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = 'DENY'
-    SECURE_SSL_REDIRECT = True
+    SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', 'False') == 'True'
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
-    SECURE_HSTS_SECONDS = 31536000
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_PRELOAD = True
+    # HSTS is enabled only when explicitly requested to avoid local browser
+    # issues during development/testing. Set ENABLE_HSTS=True in production.
+    if os.environ.get('ENABLE_HSTS', 'False') == 'True':
+        SECURE_HSTS_SECONDS = int(os.environ.get('SECURE_HSTS_SECONDS', '31536000'))
+        SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+        SECURE_HSTS_PRELOAD = True
 
 # Email Configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
