@@ -14,10 +14,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-change-this-in-production-ejeh-palace-2024')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
+# SECURITY: force DEBUG False for production deployments on Vercel
+DEBUG = False
 
+# Ensure Vercel domains are allowed when DEBUG is False
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,.vercel.app').split(',')
+if '.vercel.app' not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append('.vercel.app')
 
 # Application definition
 INSTALLED_APPS = [
@@ -141,16 +144,14 @@ CLOUDINARY_STORAGE = {
 
 cloud_name = os.environ.get('CLOUDINARY_CLOUD_NAME') or os.environ.get('CLOUDINARY_URL')
 
-# Configure storage backends based on Cloudinary availability
+# Use WhiteNoise compressed manifest storage for static files (required for
+# correct hashed static serving on Vercel). Keep media file storage conditional
+# on whether Cloudinary credentials are provided.
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 if cloud_name:
-    # When Cloudinary is configured, use Cloudinary for static and media files
-    STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 else:
-    # Fall back to local/Whitenoise storage for builds without Cloudinary
-    # Use CompressedManifestStaticFilesStorage so collected files are hashed and
-    # can be served correctly by Vercel's static build routing.
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
     DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
 # Default primary key field type
