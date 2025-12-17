@@ -147,8 +147,10 @@ if cloud_name:
     STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 else:
-    # Fall back to local file system storage during development
-    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+    # Fall back to local/Whitenoise storage for builds without Cloudinary
+    # Use CompressedManifestStaticFilesStorage so collected files are hashed and
+    # can be served correctly by Vercel's static build routing.
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
     DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
 # Default primary key field type
