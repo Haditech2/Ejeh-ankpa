@@ -1,20 +1,17 @@
 {
-    "version": 2,
+{
     "builds": [
         {
             "src": "ejeh_palace/wsgi.py",
             "use": "@vercel/python",
             "config": {
-                "maxLambdaSize": "15mb",
-                "runtime": "python3.11"
+                "maxLambdaSize": "100mb",
+                "runtime": "python3.12"
             }
         },
         {
-            "src": "build_files.sh",
-            "use": "@vercel/static-build",
-            "config": {
-                "distDir": "staticfiles"
-            }
+            "src": "staticfiles/**/*",
+            "use": "@vercel/static"
         }
     ],
     "routes": [
@@ -26,9 +23,5 @@
             "src": "/(.*)",
             "dest": "ejeh_palace/wsgi.py"
         }
-    ],
-    "env": {
-        "DJANGO_SETTINGS_MODULE": "ejeh_palace.settings",
-        "VERCEL": "1"
-    }
+    ]
 }
