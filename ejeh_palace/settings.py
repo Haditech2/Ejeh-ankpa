@@ -170,9 +170,13 @@ CLOUDINARY_STORAGE = {
 
 cloud_name = os.environ.get('CLOUDINARY_CLOUD_NAME') or os.environ.get('CLOUDINARY_URL')
 
-# Use WhiteNoise compressed manifest storage for static files (required for
-# correct hashed static serving on Vercel).
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# Use WhiteNoise compressed manifest storage for static files by default.
+# If Cloudinary is configured, upload static files to Cloudinary instead
+# so assets are served from Cloudinary CDN after `collectstatic`.
+if cloud_name:
+    STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
+else:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 if cloud_name:
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'

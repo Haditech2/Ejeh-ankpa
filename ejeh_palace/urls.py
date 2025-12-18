@@ -6,8 +6,13 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.staticfiles.storage import staticfiles_storage
+from django.views.generic.base import RedirectView
 
 urlpatterns = [
+    # Ensure browsers requesting `/favicon.ico` get redirected to the
+    # static favicon asset (prevents template rendering errors on root requests).
+    path('favicon.ico', RedirectView.as_view(url=staticfiles_storage.url('images/favicon.ico'))),
     path('palace-admin/', admin.site.urls),
     path('', include('palace.urls')),
     path('accounts/', include('accounts.urls')),
