@@ -21,8 +21,8 @@
     {% endif %}
     
     <!-- Favicon -->
-    {% if palace_info.favicon %}
-    <link rel="icon" href="{{ palace_info.favicon.url }}" type="image/x-icon">
+    {% if palace_favicon_url %}
+    <link rel="icon" href="{{ palace_favicon_url }}" type="image/x-icon">
     {% else %}
     <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
     {% endif %}
@@ -86,8 +86,8 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="{% url 'palace:home' %}">
-                {% if palace_info.logo %}
-                <img src="{{ palace_info.logo.url }}" alt="Palace Logo" height="50" class="me-2">
+                {% if palace_logo_url %}
+                <img src="{{ palace_logo_url }}" alt="Palace Logo" height="50" class="me-2">
                 {% else %}
                 <i class="bi bi-bank2 fs-2 text-primary me-2"></i>
                 {% endif %}
