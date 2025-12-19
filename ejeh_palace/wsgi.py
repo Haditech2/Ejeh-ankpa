@@ -11,6 +11,5 @@ except Exception as e:
 	traceback.print_exc()
 	raise
 
-# Expose common names Vercel looks for
+# Expose common name Vercel looks for for WSGI apps
 app = application
-handler = application

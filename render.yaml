@@ -1,0 +1,23 @@
+# Render service configuration for Ejeh Ankpa
+# See https://render.com/docs/deploy-configuration
+
+services:
+  - type: web
+    name: ejeh-ankpa-web
+    env: python
+    plan: starter
+    branch: main
+    # Build command installs dependencies and collects static files
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
+    # Start command uses gunicorn to serve the Django WSGI app
+    startCommand: gunicorn ejeh_palace.wsgi:application --bind 0.0.0.0:$PORT
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: ejeh_palace.settings
+
+# Optional managed Postgres database (uncomment to provision via render.yaml)
+#databases:
+#  - name: ejeh-ankpa-db
+#    plan: starter
+#    engine: postgresql
+#    version: "15"

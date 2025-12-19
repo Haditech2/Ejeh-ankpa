@@ -17,8 +17,8 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-change-this-in
 # SECURITY: force DEBUG False for production deployments on Vercel
 DEBUG = False
 
-# Allowed hosts for Vercel and local testing
-ALLOWED_HOSTS = ['.vercel.app', 'localhost', '127.0.0.1']
+# Allowed hosts for Vercel, Render and local testing
+ALLOWED_HOSTS = ['.vercel.app', '.onrender.com', 'localhost', '127.0.0.1']
 
 # Application definition
 INSTALLED_APPS = [
